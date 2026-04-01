@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{phong/fragments/layout :: page(${mode == 'edit'} ? 'Sửa chung cư' : 'Thêm chung cư', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1 th:text="${mode == 'edit'} ? 'Sửa chung cư' : 'Thêm chung cư'">Thêm chung cư</h1>
+			<p class="muted" th:if="${mode != 'edit'}">Tạo mới một chung cư.</p>
+			<p class="muted" th:if="${mode == 'edit'}" th:text="'Chỉnh sửa chung cư #' + ${item.id}">Chỉnh sửa</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn" th:href="@{/chung-cu}">Quay lại</a>
+			<a class="btn" th:if="${mode == 'edit'}" th:href="@{/chung-cu/{id}(id=${item.id})}">Xem chi tiết</a>
+		</div>
+	</div>
+
+	<form class="form"
+	      th:action="${mode == 'edit'} ? @{/chung-cu/{id}/sua(id=${item.id})} : @{/chung-cu/them}"
+	      th:object="${form}"
+	      method="post">
+		<div class="form-grid">
+			<label class="field">
+				<span class="field__label">Tên <span class="req">*</span></span>
+				<input class="input" type="text" th:field="*{ten}" placeholder="VD: Chung cư A" />
+				<span class="error" th:if="${#fields.hasErrors('ten')}" th:errors="*{ten}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Địa chỉ <span class="req">*</span></span>
+				<textarea class="input" rows="3" th:field="*{diaChi}" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành"></textarea>
+				<span class="error" th:if="${#fields.hasErrors('diaChi')}" th:errors="*{diaChi}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Chủ đầu tư</span>
+				<input class="input" type="text" th:field="*{chuDauTu}" placeholder="VD: Công ty ..." />
+			</label>
+
+			<div class="row">
+				<label class="field">
+					<span class="field__label">Năm xây dựng</span>
+					<input class="input" type="number" th:field="*{namXayDung}" placeholder="VD: 2020" />
+					<span class="error" th:if="${#fields.hasErrors('namXayDung')}" th:errors="*{namXayDung}">Lỗi</span>
+				</label>
+
+				<label class="field">
+					<span class="field__label">Số tầng</span>
+					<input class="input" type="number" th:field="*{soTang}" placeholder="VD: 25" />
+					<span class="error" th:if="${#fields.hasErrors('soTang')}" th:errors="*{soTang}">Lỗi</span>
+				</label>
+			</div>
+
+			<label class="field">
+				<span class="field__label">Mô tả</span>
+				<textarea class="input" rows="4" th:field="*{moTa}" placeholder="Thông tin thêm về chung cư..."></textarea>
+			</label>
+		</div>
+
+		<div class="form-actions">
+			<button class="btn btn--primary" type="submit"
+			        th:text="${mode == 'edit'} ? 'Lưu thay đổi' : 'Tạo chung cư'">Lưu</button>
+		</div>
+	</form>
+</section>
+</html>
+

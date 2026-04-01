@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="page(title, content)">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="${title}">APT</title>
+	<link rel="stylesheet" th:href="@{/phong/styles.css}" />
+</head>
+<body>
+<header class="topbar">
+	<div class="container topbar__inner">
+		<a class="brand" th:href="@{/}">APT</a>
+		<nav class="nav">
+			<a th:href="@{/}">Trang chủ</a>
+			<a th:href="@{/chung-cu}">Chung cư</a>
+		</nav>
+	</div>
+</header>
+
+<main class="container" role="main">
+	<div th:replace="${content}"></div>
+</main>
+
+<footer class="footer">
+	<div class="container footer__inner">
+		<span>Spring Boot + Thymeleaf</span>
+	</div>
+</footer>
+</body>
+</html>
+

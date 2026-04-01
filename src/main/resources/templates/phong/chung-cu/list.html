@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{phong/fragments/layout :: page('Chung cư', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1>Chung cư</h1>
+			<p class="muted">Danh sách chung cư trong hệ thống.</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn btn--primary" th:href="@{/chung-cu/them}">Thêm chung cư</a>
+		</div>
+	</div>
+
+	<div class="table-wrap">
+		<table class="table">
+			<thead>
+			<tr>
+				<th style="width: 80px;">ID</th>
+				<th>Tên</th>
+				<th>Địa chỉ</th>
+				<th style="width: 130px;">Số tầng</th>
+				<th style="width: 220px;"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:if="${#lists.isEmpty(items)}">
+				<td colspan="5" class="muted">Chưa có chung cư nào.</td>
+			</tr>
+			<tr th:each="b : ${items}">
+				<td th:text="${b.id}">1</td>
+				<td th:text="${b.ten}">Tên</td>
+				<td th:text="${b.diaChi}">Địa chỉ</td>
+				<td th:text="${b.soTang}">0</td>
+				<td class="td-actions">
+					<a class="btn btn--sm" th:href="@{/chung-cu/{id}(id=${b.id})}">Xem</a>
+					<a class="btn btn--sm" th:href="@{/chung-cu/{id}/sua(id=${b.id})}">Sửa</a>
+					<form class="inline" th:action="@{/chung-cu/{id}/xoa(id=${b.id})}" method="post">
+						<button class="btn btn--sm btn--danger" type="submit"
+						        onclick="return confirm('Xóa chung cư này?');">
+							Xóa
+						</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</section>
+</html>
+
