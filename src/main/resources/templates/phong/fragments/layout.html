@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:fragment="page(title, content)">
 <head>
 	<meta charset="utf-8" />
@@ -17,6 +17,11 @@
 			<a th:href="@{/can-ho}">Căn hộ</a>
 			<a th:href="@{/nguoi-dung}">Người dùng</a>
 			<a th:href="@{/cu-dan}">Cư dân</a>
+			<span class="muted" sec:authorize="isAuthenticated()" th:text="${#authentication.name}">user</span>
+			<a sec:authorize="isAnonymous()" th:href="@{/login}">Đăng nhập</a>
+			<form sec:authorize="isAuthenticated()" class="inline" th:action="@{/logout}" method="post">
+				<button class="btn btn--sm" type="submit">Đăng xuất</button>
+			</form>
 		</nav>
 	</div>
 </header>

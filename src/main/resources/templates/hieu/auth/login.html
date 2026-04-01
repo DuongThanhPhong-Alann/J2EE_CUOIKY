@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Đăng nhập</title>
+	<link rel="stylesheet" th:href="@{/hieu/styles.css}" />
+</head>
+<body class="auth">
+<main class="auth-card">
+	<div class="auth-head">
+		<div class="logo">APT</div>
+		<h1>Đăng nhập</h1>
+		<p class="muted">Dùng email + mật khẩu trong bảng <span class="mono">NguoiDungs</span>.</p>
+	</div>
+
+	<div class="alert alert--danger" th:if="${param.error}">
+		Sai email hoặc mật khẩu.
+	</div>
+	<div class="alert" th:if="${param.logout}">
+		Đã đăng xuất.
+	</div>
+	<div class="alert" th:if="${param.registered}">
+		Đăng ký thành công. Bạn có thể đăng nhập.
+	</div>
+
+	<form method="post" th:action="@{/login}">
+		<label class="field">
+			<span class="field__label">Email</span>
+			<input class="input" type="email" name="email" autocomplete="username" required />
+		</label>
+		<label class="field">
+			<span class="field__label">Mật khẩu</span>
+			<input class="input" type="password" name="password" autocomplete="current-password" required />
+		</label>
+		<button class="btn btn--primary" type="submit">Đăng nhập</button>
+	</form>
+
+	<div class="auth-foot">
+		<a class="link" th:href="@{/register}">Đăng ký</a>
+		<a class="link" th:href="@{/}">Về trang chủ</a>
+	</div>
+</main>
+</body>
+</html>
