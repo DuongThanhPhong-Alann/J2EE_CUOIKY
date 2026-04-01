@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{quang/fragments/layout :: page(${mode == 'edit'} ? 'Sửa người dùng' : 'Thêm người dùng', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1 th:text="${mode == 'edit'} ? 'Sửa người dùng' : 'Thêm người dùng'">Thêm người dùng</h1>
+			<p class="muted" th:if="${mode == 'edit'}" th:text="'Chỉnh sửa người dùng #' + ${item.id}">Chỉnh sửa</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn" th:href="@{/nguoi-dung}">Quay lại</a>
+			<a class="btn" th:if="${mode == 'edit'}" th:href="@{/nguoi-dung/{id}(id=${item.id})}">Xem chi tiết</a>
+		</div>
+	</div>
+
+	<div class="alert alert--danger" th:if="${formError}" th:text="${formError}">Lỗi</div>
+
+	<form class="form"
+	      th:action="${mode == 'edit'} ? @{/nguoi-dung/{id}/sua(id=${item.id})} : @{/nguoi-dung/them}"
+	      th:object="${form}"
+	      method="post">
+		<div class="form-grid">
+			<label class="field">
+				<span class="field__label">Họ tên <span class="req">*</span></span>
+				<input class="input" type="text" th:field="*{hoTen}" placeholder="VD: Nguyễn Văn A" />
+				<span class="error" th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Email <span class="req">*</span></span>
+				<input class="input" type="email" th:field="*{email}" placeholder="email@domain.com" />
+				<span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Số điện thoại</span>
+				<input class="input" type="text" th:field="*{soDienThoai}" placeholder="VD: 090..." />
+			</label>
+
+			<label class="field">
+				<span class="field__label">Loại người dùng <span class="req">*</span></span>
+				<input class="input" type="text" th:field="*{loaiNguoiDung}" placeholder="VD: Admin / CuDan / Khach" />
+				<span class="error" th:if="${#fields.hasErrors('loaiNguoiDung')}" th:errors="*{loaiNguoiDung}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label" th:text="${mode == 'edit'} ? 'Mật khẩu (để trống nếu không đổi)' : 'Mật khẩu *'">Mật khẩu</span>
+				<input class="input" type="password" th:field="*{matKhau}" autocomplete="new-password" />
+				<span class="error" th:if="${#fields.hasErrors('matKhau')}" th:errors="*{matKhau}">Lỗi</span>
+			</label>
+		</div>
+
+		<div class="form-actions">
+			<button class="btn btn--primary" type="submit"
+			        th:text="${mode == 'edit'} ? 'Lưu thay đổi' : 'Tạo người dùng'">Lưu</button>
+		</div>
+	</form>
+</section>
+</html>
+

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{quang/fragments/layout :: page('Người dùng', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1>Người dùng</h1>
+			<p class="muted">Danh sách người dùng trong hệ thống.</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn btn--primary" th:href="@{/nguoi-dung/them}">Thêm người dùng</a>
+		</div>
+	</div>
+
+	<div class="table-wrap">
+		<table class="table">
+			<thead>
+			<tr>
+				<th style="width: 80px;">ID</th>
+				<th>Họ tên</th>
+				<th>Email</th>
+				<th style="width: 160px;">Loại</th>
+				<th style="width: 220px;"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:if="${#lists.isEmpty(items)}">
+				<td colspan="5" class="muted">Chưa có người dùng nào.</td>
+			</tr>
+			<tr th:each="u : ${items}">
+				<td th:text="${u.id}">1</td>
+				<td th:text="${u.hoTen}">Họ tên</td>
+				<td class="mono" th:text="${u.email}">email</td>
+				<td>
+					<span class="pill" th:text="${u.loaiNguoiDung}">Loai</span>
+				</td>
+				<td class="td-actions">
+					<a class="btn btn--sm" th:href="@{/nguoi-dung/{id}(id=${u.id})}">Xem</a>
+					<a class="btn btn--sm" th:href="@{/nguoi-dung/{id}/sua(id=${u.id})}">Sửa</a>
+					<form class="inline" th:action="@{/nguoi-dung/{id}/xoa(id=${u.id})}" method="post">
+						<button class="btn btn--sm btn--danger" type="submit"
+						        onclick="return confirm('Xóa người dùng này?');">
+							Xóa
+						</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</section>
+</html>
+

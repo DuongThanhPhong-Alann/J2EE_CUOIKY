@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{quang/fragments/layout :: page(${mode == 'edit'} ? 'Sửa cư dân' : 'Thêm cư dân', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1 th:text="${mode == 'edit'} ? 'Sửa cư dân' : 'Thêm cư dân'">Thêm cư dân</h1>
+			<p class="muted" th:if="${mode == 'edit'}" th:text="'Chỉnh sửa cư dân #' + ${item.id}">Chỉnh sửa</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn" th:href="@{/cu-dan}">Quay lại</a>
+			<a class="btn" th:if="${mode == 'edit'}" th:href="@{/cu-dan/{id}(id=${item.id})}">Xem chi tiết</a>
+		</div>
+	</div>
+
+	<div class="alert alert--danger" th:if="${formError}" th:text="${formError}">Lỗi</div>
+
+	<form class="form"
+	      th:action="${mode == 'edit'} ? @{/cu-dan/{id}/sua(id=${item.id})} : @{/cu-dan/them}"
+	      th:object="${form}"
+	      method="post">
+		<div class="form-grid">
+			<label class="field">
+				<span class="field__label">Người dùng <span class="req">*</span></span>
+				<select class="input" th:field="*{idNguoiDung}">
+					<option value="" disabled th:selected="${form.idNguoiDung == null}">-- Chọn người dùng --</option>
+					<option th:each="u : ${users}" th:value="${u.id}" th:text="${u.hoTen + ' • ' + u.email}">User</option>
+				</select>
+				<span class="error" th:if="${#fields.hasErrors('idNguoiDung')}" th:errors="*{idNguoiDung}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Căn hộ <span class="req">*</span></span>
+				<select class="input" th:field="*{idCanHo}">
+					<option value="" disabled th:selected="${form.idCanHo == null}">-- Chọn căn hộ --</option>
+					<option th:each="a : ${apartments}"
+					        th:value="${a.id}"
+					        th:text="${a.maCan + ' • ' + (buildingNames[a.idChungCu] != null ? buildingNames[a.idChungCu] : ('#' + a.idChungCu))}">
+						Apt
+					</option>
+				</select>
+				<span class="error" th:if="${#fields.hasErrors('idCanHo')}" th:errors="*{idCanHo}">Lỗi</span>
+			</label>
+
+			<label class="field field--check">
+				<input type="checkbox" th:field="*{laChuHo}" />
+				<span>Đánh dấu là chủ hộ</span>
+			</label>
+		</div>
+
+		<div class="form-actions">
+			<button class="btn btn--primary" type="submit"
+			        th:text="${mode == 'edit'} ? 'Lưu thay đổi' : 'Tạo cư dân'">Lưu</button>
+		</div>
+	</form>
+</section>
+</html>
+
