@@ -1,6 +1,6 @@
-<!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{vy/fragments/layout :: page('Chi tiết căn hộ', ~{::section})}">
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{apt/fragments/app-layout :: page('Chi tiết căn hộ', ~{::section})}">
 <section>
 	<div class="page-head">
 		<div>
@@ -12,8 +12,8 @@
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/can-ho}">Danh sách</a>
-			<a class="btn btn--primary" th:href="@{/can-ho/{id}/sua(id=${item.id})}">Sửa</a>
-			<form class="inline" th:action="@{/can-ho/{id}/xoa(id=${item.id})}" method="post">
+			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/can-ho/{id}/sua(id=${item.id})}">Sửa</a>
+			<form class="inline" sec:authorize="hasRole('ADMIN')" th:action="@{/can-ho/{id}/xoa(id=${item.id})}" method="post">
 				<button class="btn btn--danger" type="submit"
 				        onclick="return confirm('Xóa căn hộ này?');">
 					Xóa
@@ -47,36 +47,34 @@
 				<div class="kv__k">Mô tả</div>
 				<div class="kv__v" th:text="${item.moTa}">...</div>
 			</div>
-
-			<div class="kv" th:if="${item.model3DUrl != null && !item.model3DUrl.isBlank()}">
-				<div class="kv__k">Model 3D</div>
-				<div class="kv__v">
-					<a class="link" th:href="${item.model3DUrl}" th:text="${item.model3DUrl}" target="_blank" rel="noreferrer">link</a>
-				</div>
-			</div>
-			<div class="kv" th:if="${item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()}">
-				<div class="kv__k">Sketchfab</div>
-				<div class="kv__v">
-					<a class="link" th:href="${item.sketchfabUrl}" th:text="${item.sketchfabUrl}" target="_blank" rel="noreferrer">link</a>
-				</div>
-			</div>
-			<div class="kv" th:if="${item.urls != null && !item.urls.isBlank()}">
-				<div class="kv__k">URLs</div>
-				<div class="kv__v" th:text="${item.urls}">...</div>
-			</div>
 		</div>
 
 		<div class="card">
 			<div class="card__title">Hình ảnh</div>
-			<p class="muted" th:if="${#lists.isEmpty(images)}">Chưa có hình ảnh.</p>
+			<p class="muted" th:if="${#lists.isEmpty(urlImages) && #lists.isEmpty(images)}">Chưa có hình ảnh.</p>
+
+			<div class="img-grid" th:if="${!#lists.isEmpty(urlImages)}">
+				<div class="img-item" th:each="u : ${urlImages}">
+					<img class="img" th:src="${u}" th:alt="${item.maCan}" />
+				</div>
+			</div>
 			<div class="img-grid" th:if="${!#lists.isEmpty(images)}">
-				<div class="img-item" th:each="img : ${images}">
+				<div class="img-item" th:each="img : ${images}" th:if="${!urlImageSet.contains(img.duongDan)}">
 					<img class="img" th:src="${img.duongDan}" th:alt="${item.maCan}" />
-					<div class="img-caption" th:text="${img.duongDan}">path</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<div class="grid grid--2 section" th:if="${(item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()) || (item.model3DUrl != null && !item.model3DUrl.isBlank())}">
+		<div class="card" th:if="${item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()}">
+			<div class="card__title">Sketchfab</div>
+			<iframe class="embedFrame" th:src="${item.sketchfabUrl}" loading="lazy" allowfullscreen></iframe>
+		</div>
+		<div class="card" th:if="${item.model3DUrl != null && !item.model3DUrl.isBlank()}">
+			<div class="card__title">Model 3D</div>
+			<iframe class="embedFrame embedFrame--tall" th:src="${item.model3DUrl}" loading="lazy" allowfullscreen></iframe>
+		</div>
+	</div>
 </section>
 </html>
-

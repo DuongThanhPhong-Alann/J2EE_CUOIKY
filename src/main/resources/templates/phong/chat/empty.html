@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{apt/fragments/app-layout :: pageWithHead('Chat', ~{::section}, ~{::extraHead})}">
+<th:block th:fragment="extraHead">
+	<link rel="stylesheet" th:href="@{/phong/apt-chat.css}" />
+</th:block>
+<section class="aptChatMode">
+	<div class="aptChatShell aptChatShellPage">
+		<div class="aptChatPanel aptChatSidebar">
+			<div class="aptChatSidebarHeader">
+				<div>
+					<div class="aptChatTitle">Chat</div>
+					<div class="aptChatSmall">Chưa có phòng chat để hiển thị.</div>
+				</div>
+				<a class="aptChatBtn" th:href="@{/chat/private/new}">+ Chat riêng</a>
+			</div>
+			<div class="aptChatSidebarBody">
+				<div class="aptChatEmpty">Bạn cần là cư dân của 1 chung cư hoặc tạo chat riêng.</div>
+			</div>
+		</div>
+
+		<div class="aptChatPanel aptChatMain">
+			<div class="aptChatMainHeader">
+				<div class="left">
+					<div class="aptChatH1">Chọn một cuộc trò chuyện</div>
+					<div class="aptChatH2">Tạo chat riêng hoặc tham gia nhóm chung cư của bạn.</div>
+				</div>
+			</div>
+			<div class="aptChatMsgs">
+				<div class="aptChatEmpty">Không có dữ liệu.</div>
+			</div>
+			<div class="aptChatComposer">
+				<div class="aptChatComposerRow">
+					<textarea class="aptChatTextarea" rows="1" placeholder="Nhập tin nhắn..." disabled></textarea>
+					<button class="aptChatBtn disabled" type="button">Gửi</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</html>

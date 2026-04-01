@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{quang/fragments/layout :: page('Chi tiết cư dân', ~{::section})}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{apt/fragments/app-layout :: page('Chi tiết cư dân', ~{::section})}">
 <section>
 	<div class="page-head">
 		<div>
@@ -9,8 +9,8 @@
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/cu-dan}">Danh sách</a>
-			<a class="btn btn--primary" th:href="@{/cu-dan/{id}/sua(id=${item.id})}">Sửa</a>
-			<form class="inline" th:action="@{/cu-dan/{id}/xoa(id=${item.id})}" method="post">
+			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/cu-dan/{id}/sua(id=${item.id})}">Sửa</a>
+			<form class="inline" sec:authorize="hasRole('ADMIN')" th:action="@{/cu-dan/{id}/xoa(id=${item.id})}" method="post">
 				<button class="btn btn--danger" type="submit"
 				        onclick="return confirm('Xóa cư dân này?');">
 					Xóa
@@ -55,7 +55,7 @@
 				</div>
 			</div>
 			<div class="card__actions">
-				<a class="btn" th:if="${user != null}" th:href="@{/nguoi-dung/{id}(id=${user.id})}">Xem người dùng</a>
+				<a class="btn" sec:authorize="hasRole('ADMIN')" th:if="${user != null}" th:href="@{/nguoi-dung/{id}(id=${user.id})}">Xem người dùng</a>
 				<a class="btn" th:if="${apartment != null}" th:href="@{/can-ho/{id}(id=${apartment.id})}">Xem căn hộ</a>
 				<a class="btn" th:if="${building != null}" th:href="@{/chung-cu/{id}(id=${building.id})}">Xem chung cư</a>
 			</div>
@@ -63,4 +63,3 @@
 	</div>
 </section>
 </html>
-

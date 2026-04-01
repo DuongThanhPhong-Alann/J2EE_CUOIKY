@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{phong/fragments/layout :: page('Chung cư', ~{::section})}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{apt/fragments/app-layout :: page('Chung cư', ~{::section})}">
 <section>
 	<div class="page-head">
 		<div>
@@ -8,11 +8,11 @@
 			<p class="muted">Danh sách chung cư trong hệ thống.</p>
 		</div>
 		<div class="page-head__actions">
-			<a class="btn btn--primary" th:href="@{/chung-cu/them}">Thêm chung cư</a>
+			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/chung-cu/them}">Thêm chung cư</a>
 		</div>
 	</div>
 
-	<div class="table-wrap">
+	<div class="table-wrap" sec:authorize="hasRole('ADMIN')">
 		<table class="table">
 			<thead>
 			<tr>
@@ -46,6 +46,25 @@
 			</tbody>
 		</table>
 	</div>
+
+	<div class="grid grid--2" sec:authorize="!hasRole('ADMIN')">
+		<div class="card" th:if="${#lists.isEmpty(items)}">
+			<div class="muted">Chưa có chung cư nào.</div>
+		</div>
+		<div class="card" th:each="b : ${items}">
+			<div class="card__title" th:text="${b.ten}">Tên</div>
+			<div class="kv">
+				<div class="kv__k">Địa chỉ</div>
+				<div class="kv__v" th:text="${b.diaChi}">...</div>
+			</div>
+			<div class="kv" th:if="${b.soTang != null}">
+				<div class="kv__k">Số tầng</div>
+				<div class="kv__v" th:text="${b.soTang}">0</div>
+			</div>
+			<div class="card__actions" style="margin-top:12px">
+				<a class="btn btn--sm" th:href="@{/chung-cu/{id}(id=${b.id})}">Xem</a>
+			</div>
+		</div>
+	</div>
 </section>
 </html>
-

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{phong/fragments/layout :: page(${mode == 'edit'} ? 'Sửa chung cư' : 'Thêm chung cư', ~{::section})}">
+      th:replace="~{apt/fragments/app-layout :: page(${mode == 'edit'} ? 'Sửa chung cư' : 'Thêm chung cư', ~{::section})}">
 <section>
 	<div class="page-head">
 		<div>
@@ -63,4 +63,3 @@
 	</form>
 </section>
 </html>
-
