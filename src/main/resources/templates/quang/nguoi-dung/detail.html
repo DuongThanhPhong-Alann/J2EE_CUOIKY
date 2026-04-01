@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{apt/fragments/app-layout :: page('Chi tiết người dùng', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1 th:text="${item.hoTen}">Họ tên</h1>
+			<p class="muted" th:text="'#' + ${item.id}">#1</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn" th:href="@{/nguoi-dung}">Danh sách</a>
+			<a class="btn btn--primary" th:href="@{/nguoi-dung/{id}/sua(id=${item.id})}">Sửa</a>
+			<form class="inline" th:action="@{/nguoi-dung/{id}/xoa(id=${item.id})}" method="post">
+				<button class="btn btn--danger" type="submit"
+				        onclick="return confirm('Xóa người dùng này?');">
+					Xóa
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="grid grid--2">
+		<div class="card">
+			<div class="kv">
+				<div class="kv__k">Email</div>
+				<div class="kv__v mono" th:text="${item.email}">email</div>
+			</div>
+			<div class="kv" th:if="${item.soDienThoai != null && !item.soDienThoai.isBlank()}">
+				<div class="kv__k">Số điện thoại</div>
+				<div class="kv__v" th:text="${item.soDienThoai}">sdt</div>
+			</div>
+			<div class="kv">
+				<div class="kv__k">Loại</div>
+				<div class="kv__v">
+					<span class="pill" th:text="${item.loaiNguoiDung}">Loai</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card__title">Liên kết</div>
+			<div class="card__actions">
+				<a class="btn" th:href="@{/cu-dan(idNguoiDung=${item.id})}">Xem cư dân</a>
+			</div>
+		</div>
+	</div>
+</section>
+</html>

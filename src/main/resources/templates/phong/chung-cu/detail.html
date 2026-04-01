@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{apt/fragments/app-layout :: page('Chi tiết chung cư', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1 th:text="${item.ten}">Tên chung cư</h1>
+			<p class="muted" th:text="'#' + ${item.id}">#1</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn" th:href="@{/chung-cu}">Danh sách</a>
+			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/chung-cu/{id}/sua(id=${item.id})}">Sửa</a>
+			<form class="inline" sec:authorize="hasRole('ADMIN')" th:action="@{/chung-cu/{id}/xoa(id=${item.id})}" method="post">
+				<button class="btn btn--danger" type="submit"
+				        onclick="return confirm('Xóa chung cư này?');">
+					Xóa
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="grid grid--2">
+		<div class="card">
+			<div class="kv">
+				<div class="kv__k">Địa chỉ</div>
+				<div class="kv__v" th:text="${item.diaChi}">...</div>
+			</div>
+			<div class="kv" th:if="${item.chuDauTu != null && !item.chuDauTu.isBlank()}">
+				<div class="kv__k">Chủ đầu tư</div>
+				<div class="kv__v" th:text="${item.chuDauTu}">...</div>
+			</div>
+			<div class="kv" th:if="${item.namXayDung != null}">
+				<div class="kv__k">Năm xây dựng</div>
+				<div class="kv__v" th:text="${item.namXayDung}">...</div>
+			</div>
+			<div class="kv" th:if="${item.soTang != null}">
+				<div class="kv__k">Số tầng</div>
+				<div class="kv__v" th:text="${item.soTang}">...</div>
+			</div>
+			<div class="kv" th:if="${item.moTa != null && !item.moTa.isBlank()}">
+				<div class="kv__k">Mô tả</div>
+				<div class="kv__v" th:text="${item.moTa}">...</div>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card__title">Hình ảnh</div>
+			<p class="muted" th:if="${#lists.isEmpty(images)}">Chưa có hình ảnh.</p>
+			<div class="img-grid" th:if="${!#lists.isEmpty(images)}">
+				<div class="img-item" th:each="img : ${images}">
+					<img class="img" th:src="${img.duongDan}" th:alt="${item.ten}" />
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</html>

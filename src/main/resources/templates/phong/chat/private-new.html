@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{apt/fragments/app-layout :: pageWithHead('Tạo chat riêng', ~{::section}, ~{::extraHead})}">
+<th:block th:fragment="extraHead">
+	<link rel="stylesheet" th:href="@{/phong/apt-chat.css}" />
+</th:block>
+<section class="aptChatMode">
+	<div class="aptChatShell aptChatShellPage aptChatShellSingle">
+		<div class="aptChatPanel aptChatMain">
+			<div class="aptChatMainHeader">
+				<div class="left">
+					<div class="aptChatH1">Tạo chat riêng</div>
+					<div class="aptChatH2">Nhập email người bạn muốn nhắn tin.</div>
+				</div>
+				<div class="right">
+					<a class="aptChatBtn" th:href="@{/chat}">Quay lại</a>
+				</div>
+			</div>
+			<div class="aptChatMsgs">
+				<div class="aptChatFormCard">
+					<div class="aptChatAlert aptChatAlertDanger" th:if="${formError}" th:text="${formError}">Lỗi</div>
+					<form method="post" th:action="@{/chat/private/new}">
+						<label class="aptChatField">
+							<span>Email</span>
+							<input class="aptChatInput" type="email" name="email" placeholder="user@apt.local" required />
+						</label>
+						<button class="aptChatBtn aptChatBtnPrimary" type="submit">Tạo chat</button>
+					</form>
+					<div class="aptChatTip">
+						Gợi ý: thử <span class="mono">admin@apt.local</span> hoặc <span class="mono">resident@apt.local</span> (nếu bạn đã seed DB).
+					</div>
+				</div>
+			</div>
+			<div class="aptChatComposer">
+				<div class="aptChatComposerRow">
+					<textarea class="aptChatTextarea" rows="1" placeholder="..." disabled></textarea>
+					<button class="aptChatBtn disabled" type="button">Gửi</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="page(title, content)">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="${title}">APT</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{/apt/apt-ui.css}" />
+</head>
+<body>
+<header class="topbar">
+	<div class="container topbar__inner">
+		<a class="brand" th:href="@{/}">APT</a>
+		<nav class="nav">
+			<a th:href="@{/}">Trang chủ</a>
+			<a th:href="@{/chung-cu}">Chung cư</a>
+			<a th:href="@{/can-ho}">Căn hộ</a>
+			<a th:href="@{/chat}">Chat</a>
+			<a th:href="@{/nguoi-dung}">Người dùng</a>
+			<a th:href="@{/cu-dan}">Cư dân</a>
+			<span class="muted" sec:authorize="isAuthenticated()" th:text="${#authentication.name}">user</span>
+			<a sec:authorize="isAnonymous()" th:href="@{/login}">Đăng nhập</a>
+			<form sec:authorize="isAuthenticated()" class="inline" th:action="@{/logout}" method="post">
+				<button class="btn btn--sm" type="submit">Đăng xuất</button>
+			</form>
+		</nav>
+	</div>
+</header>
+
+<main class="container" role="main">
+	<div th:replace="${content}"></div>
+</main>
+
+<footer class="footer">
+	<div class="container footer__inner">
+		<span>Spring Boot + Thymeleaf</span>
+	</div>
+</footer>
+</body>
+</html>

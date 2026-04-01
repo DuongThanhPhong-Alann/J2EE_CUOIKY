@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{apt/fragments/app-layout :: page('Chung cư', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1>Chung cư</h1>
+			<p class="muted">Danh sách chung cư trong hệ thống.</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/chung-cu/them}">Thêm chung cư</a>
+		</div>
+	</div>
+
+	<div class="table-wrap" sec:authorize="hasRole('ADMIN')">
+		<table class="table">
+			<thead>
+			<tr>
+				<th style="width: 80px;">ID</th>
+				<th>Tên</th>
+				<th>Địa chỉ</th>
+				<th style="width: 130px;">Số tầng</th>
+				<th style="width: 220px;"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:if="${#lists.isEmpty(items)}">
+				<td colspan="5" class="muted">Chưa có chung cư nào.</td>
+			</tr>
+			<tr th:each="b : ${items}">
+				<td th:text="${b.id}">1</td>
+				<td th:text="${b.ten}">Tên</td>
+				<td th:text="${b.diaChi}">Địa chỉ</td>
+				<td th:text="${b.soTang}">0</td>
+				<td class="td-actions">
+					<a class="btn btn--sm" th:href="@{/chung-cu/{id}(id=${b.id})}">Xem</a>
+					<a class="btn btn--sm" th:href="@{/chung-cu/{id}/sua(id=${b.id})}">Sửa</a>
+					<form class="inline" th:action="@{/chung-cu/{id}/xoa(id=${b.id})}" method="post">
+						<button class="btn btn--sm btn--danger" type="submit"
+						        onclick="return confirm('Xóa chung cư này?');">
+							Xóa
+						</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="grid grid--2" sec:authorize="!hasRole('ADMIN')">
+		<div class="card" th:if="${#lists.isEmpty(items)}">
+			<div class="muted">Chưa có chung cư nào.</div>
+		</div>
+		<div class="card" th:each="b : ${items}">
+			<div class="card__title" th:text="${b.ten}">Tên</div>
+			<div class="kv">
+				<div class="kv__k">Địa chỉ</div>
+				<div class="kv__v" th:text="${b.diaChi}">...</div>
+			</div>
+			<div class="kv" th:if="${b.soTang != null}">
+				<div class="kv__k">Số tầng</div>
+				<div class="kv__v" th:text="${b.soTang}">0</div>
+			</div>
+			<div class="card__actions" style="margin-top:12px">
+				<a class="btn btn--sm" th:href="@{/chung-cu/{id}(id=${b.id})}">Xem</a>
+			</div>
+		</div>
+	</div>
+</section>
+</html>

@@ -1,0 +1,126 @@
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{apt/fragments/app-layout :: page('Căn hộ', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1>Căn hộ</h1>
+			<p class="muted">Danh sách căn hộ (có thể lọc theo chung cư).</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/can-ho/them}">Thêm căn hộ</a>
+		</div>
+	</div>
+
+	<form class="filter" method="get" th:action="@{/can-ho}">
+		<label class="field">
+			<span class="field__label">Chung cư</span>
+			<select class="input" name="idChungCu">
+				<option value="" th:selected="${selectedBuildingId == null}">Tất cả</option>
+				<option th:each="b : ${buildings}"
+				        th:value="${b.id}"
+				        th:selected="${selectedBuildingId != null && selectedBuildingId == b.id}"
+				        th:text="${b.ten}">
+					Chung cư
+				</option>
+			</select>
+		</label>
+		<button class="btn" type="submit">Lọc</button>
+		<a class="btn" th:href="@{/can-ho}">Reset</a>
+	</form>
+
+	<!-- ADMIN: table -->
+	<div class="table-wrap" sec:authorize="hasRole('ADMIN')">
+		<table class="table">
+			<thead>
+			<tr>
+				<th style="width: 80px;">ID</th>
+				<th style="width: 110px;">Ảnh</th>
+				<th style="width: 160px;">Mã căn</th>
+				<th>Chung cư</th>
+				<th style="width: 120px;">Số phòng</th>
+				<th style="width: 140px;">Diện tích</th>
+				<th style="width: 160px;">Giá</th>
+				<th style="width: 220px;"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:if="${#lists.isEmpty(items)}">
+				<td colspan="8" class="muted">Chưa có căn hộ nào.</td>
+			</tr>
+			<tr th:each="a : ${items}">
+				<td th:text="${a.id}">1</td>
+				<td>
+					<img class="thumb" loading="lazy" th:if="${thumbByApartmentId[a.id] != null}" th:src="${thumbByApartmentId[a.id]}" th:alt="${a.maCan}" />
+					<div class="thumb thumb--empty" th:if="${thumbByApartmentId[a.id] == null}"></div>
+				</td>
+				<td>
+					<div class="mono" th:text="${a.maCan}">A-01</div>
+					<div class="pill" th:text="${a.trangThai}">Trạng thái</div>
+				</td>
+				<td th:text="${buildingNames[a.idChungCu]} != null ? ${buildingNames[a.idChungCu]} : ('#' + a.idChungCu)">Chung cư</td>
+				<td th:text="${a.soPhong}">0</td>
+				<td th:text="${a.dienTich}">0</td>
+				<td th:text="${a.gia}">0</td>
+				<td class="td-actions">
+					<a class="btn btn--sm" th:href="@{/can-ho/{id}(id=${a.id})}">Xem</a>
+					<a class="btn btn--sm" th:href="@{/can-ho/{id}/sua(id=${a.id})}">Sửa</a>
+					<form class="inline" th:action="@{/can-ho/{id}/xoa(id=${a.id})}" method="post">
+						<button class="btn btn--sm btn--danger" type="submit"
+						        onclick="return confirm('Xóa căn hộ này?');">
+							Xóa
+						</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- GUEST/RESIDENT: cards -->
+	<div class="grid grid--3" sec:authorize="!hasRole('ADMIN')">
+		<div class="card" th:if="${#lists.isEmpty(items)}">
+			<div class="muted">Chưa có căn hộ nào.</div>
+		</div>
+
+		<a class="aptCardLink" th:each="a : ${items}" th:href="@{/can-ho/{id}(id=${a.id})}">
+			<article class="card aptApartmentCard">
+				<div class="aptApartmentImgWrap">
+					<img class="aptApartmentImg"
+					     loading="lazy"
+					     th:if="${thumbByApartmentId[a.id] != null}"
+					     th:src="${thumbByApartmentId[a.id]}"
+					     th:alt="${a.maCan}" />
+					<div class="aptApartmentImgPlaceholder" th:if="${thumbByApartmentId[a.id] == null}">
+						<div class="mono" th:text="${a.maCan}">A-01</div>
+					</div>
+				</div>
+
+				<div class="aptApartmentBody">
+					<div class="aptApartmentTitle">
+						<div class="mono" th:text="${a.maCan}">A-01</div>
+						<span class="pill" th:text="${a.trangThai}">Trạng thái</span>
+					</div>
+
+					<div class="kv">
+						<div class="kv__k">Chung cư</div>
+						<div class="kv__v" th:text="${buildingNames[a.idChungCu]} != null ? ${buildingNames[a.idChungCu]} : ('#' + a.idChungCu)">Chung cư</div>
+					</div>
+					<div class="kv">
+						<div class="kv__k">Số phòng</div>
+						<div class="kv__v" th:text="${a.soPhong}">0</div>
+					</div>
+					<div class="kv">
+						<div class="kv__k">Diện tích</div>
+						<div class="kv__v" th:text="${a.dienTich}">0</div>
+					</div>
+					<div class="kv">
+						<div class="kv__k">Giá</div>
+						<div class="kv__v" th:text="${a.gia}">0</div>
+					</div>
+				</div>
+			</article>
+		</a>
+	</div>
+</section>
+</html>

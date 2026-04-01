@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{apt/fragments/app-layout :: page(${mode == 'edit'} ? 'Sửa căn hộ' : 'Thêm căn hộ', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1 th:text="${mode == 'edit'} ? 'Sửa căn hộ' : 'Thêm căn hộ'">Thêm căn hộ</h1>
+			<p class="muted" th:if="${mode != 'edit'}">Tạo mới một căn hộ.</p>
+			<p class="muted" th:if="${mode == 'edit'}" th:text="'Chỉnh sửa căn hộ #' + ${item.id}">Chỉnh sửa</p>
+		</div>
+		<div class="page-head__actions">
+			<a class="btn" th:href="@{/can-ho}">Quay lại</a>
+			<a class="btn" th:if="${mode == 'edit'}" th:href="@{/can-ho/{id}(id=${item.id})}">Xem chi tiết</a>
+		</div>
+	</div>
+
+	<div class="alert alert--danger" th:if="${formError}" th:text="${formError}">
+		Lỗi
+	</div>
+
+	<form class="form"
+	      th:action="${mode == 'edit'} ? @{/can-ho/{id}/sua(id=${item.id})} : @{/can-ho/them}"
+	      th:object="${form}"
+	      method="post">
+		<div class="form-grid">
+			<label class="field">
+				<span class="field__label">Mã căn <span class="req">*</span></span>
+				<input class="input" type="text" th:field="*{maCan}" placeholder="VD: A-101" />
+				<span class="error" th:if="${#fields.hasErrors('maCan')}" th:errors="*{maCan}">Lỗi</span>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Chung cư <span class="req">*</span></span>
+				<select class="input" th:field="*{idChungCu}">
+					<option value="" disabled th:selected="${form.idChungCu == null}">-- Chọn chung cư --</option>
+					<option th:each="b : ${buildings}" th:value="${b.id}" th:text="${b.ten}">Chung cư</option>
+				</select>
+				<span class="error" th:if="${#fields.hasErrors('idChungCu')}" th:errors="*{idChungCu}">Lỗi</span>
+			</label>
+
+			<div class="row">
+				<label class="field">
+					<span class="field__label">Số phòng</span>
+					<input class="input" type="number" th:field="*{soPhong}" placeholder="VD: 2" />
+					<span class="error" th:if="${#fields.hasErrors('soPhong')}" th:errors="*{soPhong}">Lỗi</span>
+				</label>
+
+				<label class="field">
+					<span class="field__label">Diện tích</span>
+					<input class="input" type="number" step="0.01" th:field="*{dienTich}" placeholder="VD: 68.5" />
+					<span class="error" th:if="${#fields.hasErrors('dienTich')}" th:errors="*{dienTich}">Lỗi</span>
+				</label>
+			</div>
+
+			<div class="row">
+				<label class="field">
+					<span class="field__label">Giá</span>
+					<input class="input" type="number" step="0.01" th:field="*{gia}" placeholder="VD: 2500000000" />
+					<span class="error" th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}">Lỗi</span>
+				</label>
+
+				<label class="field">
+					<span class="field__label">Trạng thái <span class="req">*</span></span>
+					<input class="input" type="text" th:field="*{trangThai}" placeholder="VD: Dang ban / Da ban / Dang thue" />
+					<span class="error" th:if="${#fields.hasErrors('trangThai')}" th:errors="*{trangThai}">Lỗi</span>
+				</label>
+			</div>
+
+			<label class="field">
+				<span class="field__label">Mô tả</span>
+				<textarea class="input" rows="4" th:field="*{moTa}" placeholder="Thông tin thêm về căn hộ..."></textarea>
+			</label>
+
+			<label class="field">
+				<span class="field__label">Model 3D URL</span>
+				<input class="input" type="url" th:field="*{model3DUrl}" placeholder="https://..." />
+			</label>
+
+			<label class="field">
+				<span class="field__label">Sketchfab URL</span>
+				<input class="input" type="url" th:field="*{sketchfabUrl}" placeholder="https://sketchfab.com/..." />
+			</label>
+
+			<label class="field">
+				<span class="field__label">URLs (khác)</span>
+				<textarea class="input" rows="3" th:field="*{urls}" placeholder="Mỗi URL một dòng (tuỳ bạn)"></textarea>
+			</label>
+		</div>
+
+		<div class="form-actions">
+			<button class="btn btn--primary" type="submit"
+			        th:text="${mode == 'edit'} ? 'Lưu thay đổi' : 'Tạo căn hộ'">Lưu</button>
+		</div>
+	</form>
+</section>
+</html>

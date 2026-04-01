@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{apt/fragments/app-layout :: pageWithHead(${chatTitle}, ~{::section}, ~{::extraHead})}">
+<th:block th:fragment="extraHead">
+	<link rel="stylesheet" th:href="@{/phong/apt-chat.css}" />
+</th:block>
+<section class="aptChatMode">
+	<div class="aptChatShell aptChatShellPage">
+		<aside class="aptChatPanel aptChatSidebar">
+			<div class="aptChatSidebarHeader">
+				<div>
+					<div class="aptChatTitle">Chat</div>
+					<div class="aptChatSmall" th:text="${me.hoTen}">Me</div>
+				</div>
+				<a class="aptChatBtn" th:href="@{/chat/private/new}">+ Chat riêng</a>
+			</div>
+			<div class="aptChatSidebarBody">
+				<div class="aptChatList">
+					<a class="aptChatItem"
+					   th:each="it : ${sidebar}"
+					   th:href="@{/chat/{id}(id=${it.chat.id})}"
+					   th:classappend="${activeChatId != null and activeChatId == it.chat.id} ? ' aptChatItemActive' : ''">
+						<div class="aptChatAvatar" aria-hidden="true">
+							<span th:text="${#strings.substring(it.name,0,1)}">C</span>
+						</div>
+						<div class="aptChatMeta">
+							<div class="aptChatName" th:text="${it.name}">Name</div>
+							<div class="aptChatType" th:text="${it.subtitle}">Type</div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</aside>
+
+		<section class="aptChatPanel aptChatMain">
+			<header class="aptChatMainHeader">
+				<div class="left">
+					<div class="aptChatH1" th:text="${chatTitle}">Title</div>
+					<div class="aptChatH2" th:text="${chatSubtitle}">Subtitle</div>
+				</div>
+				<div class="right">
+					<a class="aptChatBtn" th:if="${chat.loai == 'building' && chat.idChungCu != null}"
+					   th:href="@{/chung-cu/{id}(id=${chat.idChungCu})}">Xem chung cư</a>
+				</div>
+			</header>
+
+			<div class="aptChatMsgs" id="msgs">
+				<div class="aptChatEmpty" th:if="${#lists.isEmpty(messages)}">Chưa có tin nhắn. Gửi tin nhắn đầu tiên nhé.</div>
+				<div class="aptChatMsgList" th:if="${!#lists.isEmpty(messages)}">
+					<div class="aptChatMsg"
+					     th:each="m : ${messages}"
+					     th:classappend="${m.idNguoiGui} == ${meId} ? ' me' : ''">
+						<div class="aptChatBubble">
+							<div class="aptChatMetaLine">
+								<div class="aptChatSenderWrap">
+									<div class="aptChatSender"
+									     th:text="${sendersById[m.idNguoiGui]} != null ? sendersById[m.idNguoiGui].hoTen : ('#' + m.idNguoiGui)">
+										Sender
+									</div>
+								</div>
+								<div class="aptChatTime" th:text="${fmtTime.format(m.createdAt)}">12:00</div>
+							</div>
+							<div class="aptChatText" th:text="${m.noiDung}">Text</div>
+						</div>
+					</div>
+					<div id="bottom"></div>
+				</div>
+			</div>
+
+			<div class="aptChatComposer">
+				<form class="aptChatComposerRow" method="post" th:action="@{/chat/{id}/messages(id=${chat.id})}">
+					<textarea class="aptChatTextarea" name="noiDung" rows="1" placeholder="Nhập tin nhắn..." required></textarea>
+					<button class="aptChatBtn aptChatBtnPrimary" type="submit">Gửi</button>
+				</form>
+				<div class="aptChatSmall aptChatHint">Mẹo: Enter để gửi, Shift+Enter để xuống dòng.</div>
+			</div>
+		</section>
+	</div>
+
+	<script th:src="@{/phong/chat.js}"></script>
+</section>
+</html>
