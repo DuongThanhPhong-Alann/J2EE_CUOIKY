@@ -5,7 +5,7 @@
 	<div class="page-head">
 		<div>
 			<h1 th:text="${item.hoTen}">Họ tên</h1>
-			<p class="muted" th:text="'#' + ${item.id}">#1</p>
+			<p class="muted" th:text="'#' + item.id">#1</p>
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/nguoi-dung}">Danh sách</a>
@@ -32,7 +32,9 @@
 			<div class="kv">
 				<div class="kv__k">Loại</div>
 				<div class="kv__v">
-					<span class="pill" th:text="${item.loaiNguoiDung}">Loai</span>
+					<span class="pill"
+					      th:classappend="${item.loaiNguoiDung != null and #strings.contains(#strings.toUpperCase(item.loaiNguoiDung), 'ADMIN')} ? ' pill--purple' : ' pill--blue'"
+					      th:text="${item.loaiNguoiDung}">Loai</span>
 				</div>
 			</div>
 		</div>

@@ -5,7 +5,7 @@
 	<div class="page-head">
 		<div>
 			<h1>Cư dân</h1>
-			<p class="muted" th:text="'#' + ${item.id}">#1</p>
+			<p class="muted" th:text="'#' + item.id">#1</p>
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/cu-dan}">Danh sách</a>
@@ -28,13 +28,13 @@
 						<div th:text="${user.hoTen}">Tên</div>
 						<div class="muted mono" th:text="${user.email}">email</div>
 					</div>
-					<div th:if="${user == null}" class="muted" th:text="'#' + ${item.idNguoiDung}">#</div>
+					<div th:if="${user == null}" class="muted" th:text="'#' + item.idNguoiDung">#</div>
 				</div>
 			</div>
 			<div class="kv">
 				<div class="kv__k">Chủ hộ</div>
 				<div class="kv__v">
-					<span class="pill" th:text="${item.laChuHo} ? 'Có' : 'Không'">Không</span>
+					<span class="pill" th:classappend="${item.laChuHo} ? ' pill--green' : ' pill--red'" th:text="${item.laChuHo} ? 'Có' : 'Không'">Không</span>
 				</div>
 			</div>
 		</div>
@@ -44,14 +44,14 @@
 				<div class="kv__k">Căn hộ</div>
 				<div class="kv__v">
 					<span th:if="${apartment != null}" class="mono" th:text="${apartment.maCan}">A-101</span>
-					<span th:if="${apartment == null}" class="muted" th:text="'#' + ${item.idCanHo}">#</span>
+					<span th:if="${apartment == null}" class="muted" th:text="'#' + item.idCanHo">#</span>
 				</div>
 			</div>
 			<div class="kv">
 				<div class="kv__k">Chung cư</div>
 				<div class="kv__v">
 					<span th:if="${building != null}" th:text="${building.ten}">Chung cư</span>
-					<span th:if="${building == null}" class="muted" th:text="'#' + ${item.idChungCu}">#</span>
+					<span th:if="${building == null}" class="muted" th:text="'#' + item.idChungCu">#</span>
 				</div>
 			</div>
 			<div class="card__actions">

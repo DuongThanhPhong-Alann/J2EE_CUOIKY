@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{apt/fragments/app-layout :: page('Chung cư', ~{::section})}">
 <section>
@@ -47,24 +47,37 @@
 		</table>
 	</div>
 
-	<div class="grid grid--2" sec:authorize="!hasRole('ADMIN')">
+	<div class="grid grid--3" sec:authorize="!hasRole('ADMIN')">
 		<div class="card" th:if="${#lists.isEmpty(items)}">
 			<div class="muted">Chưa có chung cư nào.</div>
 		</div>
-		<div class="card" th:each="b : ${items}">
-			<div class="card__title" th:text="${b.ten}">Tên</div>
-			<div class="kv">
-				<div class="kv__k">Địa chỉ</div>
-				<div class="kv__v" th:text="${b.diaChi}">...</div>
-			</div>
-			<div class="kv" th:if="${b.soTang != null}">
-				<div class="kv__k">Số tầng</div>
-				<div class="kv__v" th:text="${b.soTang}">0</div>
-			</div>
-			<div class="card__actions" style="margin-top:12px">
-				<a class="btn btn--sm" th:href="@{/chung-cu/{id}(id=${b.id})}">Xem</a>
-			</div>
-		</div>
+
+		<a class="aptCardLink" th:each="b : ${items}" th:href="@{/chung-cu/{id}(id=${b.id})}">
+			<article class="card aptBuildingCard">
+				<div class="aptBuildingImgWrap">
+					<img class="aptBuildingImg"
+					     loading="lazy"
+					     th:if="${thumbByBuildingId[b.id] != null}"
+					     th:src="${thumbByBuildingId[b.id]}"
+					     th:alt="${b.ten}" />
+					<div class="aptBuildingImgPlaceholder" th:if="${thumbByBuildingId[b.id] == null}">
+						<div class="mono" th:text="${b.ten}">Chung cư</div>
+					</div>
+				</div>
+
+				<div class="aptBuildingBody">
+					<div class="aptBuildingTitle" th:text="${b.ten}">Tên</div>
+					<div class="kv">
+						<div class="kv__k">Địa chỉ</div>
+						<div class="kv__v" th:text="${b.diaChi}">...</div>
+					</div>
+					<div class="kv" th:if="${b.soTang != null}">
+						<div class="kv__k">Số tầng</div>
+						<div class="kv__v" th:text="${b.soTang}">0</div>
+					</div>
+				</div>
+			</article>
+		</a>
 	</div>
 </section>
 </html>

@@ -29,6 +29,29 @@
 		<a class="btn" th:href="@{/can-ho}">Reset</a>
 	</form>
 
+	<div class="card" style="padding:12px;margin-bottom:14px">
+		<div class="card__actions">
+			<a class="btn btn--sm"
+			   th:classappend="${view == 'trong'} ? ' btn--primary' : ''"
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='trong')}">Căn trống</a>
+			<a class="btn btn--sm"
+			   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
+			   th:classappend="${view == 'dang-o'} ? ' btn--primary' : ''"
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='dang-o')}">Đang ở</a>
+			<a class="btn btn--sm"
+			   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
+			   th:classappend="${view == 'bao-tri'} ? ' btn--primary' : ''"
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='bao-tri')}">Bảo trì</a>
+			<a class="btn btn--sm"
+			   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
+			   th:classappend="${view == 'tat-ca'} ? ' btn--primary' : ''"
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='tat-ca')}">Tất cả</a>
+		</div>
+		<p class="muted" sec:authorize="isAnonymous()" style="margin:8px 0 0">
+			Khách chỉ xem được căn hộ đang <b>Trống</b>. Đăng nhập để xem thêm.
+		</p>
+	</div>
+
 	<!-- ADMIN: table -->
 	<div class="table-wrap" sec:authorize="hasRole('ADMIN')">
 		<table class="table">
@@ -56,9 +79,11 @@
 				</td>
 				<td>
 					<div class="mono" th:text="${a.maCan}">A-01</div>
-					<div class="pill" th:text="${a.trangThai}">Trạng thái</div>
+					<div class="pill"
+					     th:classappend="${a.trangThai != null and #strings.contains(#strings.toLowerCase(a.trangThai), 'trống')} ? ' pill--green' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(a.trangThai), 'ở'))} ? ' pill--blue' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(a.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+					     th:text="${a.trangThai}">Trạng thái</div>
 				</td>
-				<td th:text="${buildingNames[a.idChungCu]} != null ? ${buildingNames[a.idChungCu]} : ('#' + a.idChungCu)">Chung cư</td>
+				<td th:text="${buildingNames[a.idChungCu] != null ? buildingNames[a.idChungCu] : ('#' + a.idChungCu)}">Chung cư</td>
 				<td th:text="${a.soPhong}">0</td>
 				<td th:text="${a.dienTich}">0</td>
 				<td th:text="${a.gia}">0</td>
@@ -78,49 +103,52 @@
 	</div>
 
 	<!-- GUEST/RESIDENT: cards -->
-	<div class="grid grid--3" sec:authorize="!hasRole('ADMIN')">
+	<div sec:authorize="!hasRole('ADMIN')">
 		<div class="card" th:if="${#lists.isEmpty(items)}">
 			<div class="muted">Chưa có căn hộ nào.</div>
 		</div>
 
-		<a class="aptCardLink" th:each="a : ${items}" th:href="@{/can-ho/{id}(id=${a.id})}">
-			<article class="card aptApartmentCard">
-				<div class="aptApartmentImgWrap">
-					<img class="aptApartmentImg"
-					     loading="lazy"
-					     th:if="${thumbByApartmentId[a.id] != null}"
-					     th:src="${thumbByApartmentId[a.id]}"
-					     th:alt="${a.maCan}" />
-					<div class="aptApartmentImgPlaceholder" th:if="${thumbByApartmentId[a.id] == null}">
-						<div class="mono" th:text="${a.maCan}">A-01</div>
-					</div>
-				</div>
+		<div class="grid grid--3" th:if="${!#lists.isEmpty(items)}">
+			<a class="aptCardLink" th:each="a : ${items}" th:href="@{/can-ho/{id}(id=${a.id})}">
+					<article class="card aptApartmentCard">
+						<div class="aptApartmentImgWrap">
+							<img class="aptApartmentImg"
+							     loading="lazy"
+							     th:if="${thumbByApartmentId[a.id] != null}"
+							     th:src="${thumbByApartmentId[a.id]}"
+							     th:alt="${a.maCan}" />
+							<div class="aptApartmentImgPlaceholder" th:if="${thumbByApartmentId[a.id] == null}">
+								<div class="mono" th:text="${a.maCan}">A-01</div>
+							</div>
+						</div>
 
-				<div class="aptApartmentBody">
-					<div class="aptApartmentTitle">
-						<div class="mono" th:text="${a.maCan}">A-01</div>
-						<span class="pill" th:text="${a.trangThai}">Trạng thái</span>
-					</div>
+						<div class="aptApartmentBody">
+							<div class="aptApartmentTitle">
+								<div class="mono" th:text="${a.maCan}">A-01</div>
+								<span class="pill"
+								      th:classappend="${a.trangThai != null and #strings.contains(#strings.toLowerCase(a.trangThai), 'trống')} ? ' pill--green' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(a.trangThai), 'ở'))} ? ' pill--blue' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(a.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+								      th:text="${a.trangThai}">Trạng thái</span>
+							</div>
 
-					<div class="kv">
-						<div class="kv__k">Chung cư</div>
-						<div class="kv__v" th:text="${buildingNames[a.idChungCu]} != null ? ${buildingNames[a.idChungCu]} : ('#' + a.idChungCu)">Chung cư</div>
-					</div>
-					<div class="kv">
-						<div class="kv__k">Số phòng</div>
-						<div class="kv__v" th:text="${a.soPhong}">0</div>
-					</div>
-					<div class="kv">
-						<div class="kv__k">Diện tích</div>
-						<div class="kv__v" th:text="${a.dienTich}">0</div>
-					</div>
-					<div class="kv">
-						<div class="kv__k">Giá</div>
-						<div class="kv__v" th:text="${a.gia}">0</div>
-					</div>
-				</div>
-			</article>
-		</a>
+							<div class="aptApartmentSub muted"
+							     th:text="${buildingNames[a.idChungCu] != null ? buildingNames[a.idChungCu] : ('#' + a.idChungCu)}">Chung cư</div>
+
+							<div class="kv">
+								<div class="kv__k">Số phòng</div>
+								<div class="kv__v" th:text="${a.soPhong}">0</div>
+							</div>
+							<div class="kv">
+								<div class="kv__k">Diện tích</div>
+								<div class="kv__v" th:text="${a.dienTich}">0</div>
+							</div>
+							<div class="kv">
+								<div class="kv__k">Giá</div>
+								<div class="kv__v" th:text="${a.gia}">0</div>
+							</div>
+						</div>
+					</article>
+				</a>
+		</div>
 	</div>
 </section>
 </html>

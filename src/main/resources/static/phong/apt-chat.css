@@ -5,12 +5,45 @@
   --aptchat-muted:#64748b;
   --aptchat-border:rgba(15,23,42,.12);
   --aptchat-shadow:0 14px 40px rgba(15,23,42,.14);
+  --aptchat-wallpaper: none;
+  --aptchat-wallpaper-tint: rgba(248,250,252,.82);
   --aptchat-accent-h:210;
   --aptchat-accent-s:90%;
   --aptchat-accent-l:62%;
   --aptchat-accent-h2:265;
   --aptchat-accent-s2:90%;
   --aptchat-accent-l2:62%;
+  --aptchat-out-border: rgba(2,6,23,.10);
+}
+
+/* Theme presets (toggle via body[data-aptchat-theme="..."]) */
+body[data-aptchat-theme="ocean"]{
+  --aptchat-accent-h:195;--aptchat-accent-h2:230;
+}
+body[data-aptchat-theme="grape"]{
+  --aptchat-accent-h:265;--aptchat-accent-h2:315;
+}
+body[data-aptchat-theme="emerald"]{
+  --aptchat-accent-h:145;--aptchat-accent-h2:205;
+}
+body[data-aptchat-theme="sunset"]{
+  --aptchat-accent-h:22;--aptchat-accent-h2:310;
+}
+body[data-aptchat-theme="midnight"]{
+  --aptchat-bg:#070b14;
+  --aptchat-panel:rgba(15,23,42,.80);
+  --aptchat-text:#e5e7eb;
+  --aptchat-muted:#94a3b8;
+  --aptchat-border:rgba(148,163,184,.22);
+  --aptchat-shadow:0 18px 60px rgba(2,6,23,.55);
+  --aptchat-wallpaper-tint: rgba(7,11,20,.80);
+  --aptchat-out-border: rgba(226,232,240,.18);
+  --aptchat-accent-h:210;--aptchat-accent-h2:265;
+}
+
+.aptChatMode{
+  /* Derived accent variables must be computed on the element that receives theme overrides.
+     If computed on :root, changing --aptchat-accent-h on <body> won't affect them. */
   --aptchat-accent-1: hsl(var(--aptchat-accent-h), var(--aptchat-accent-s), var(--aptchat-accent-l));
   --aptchat-accent-2: hsl(var(--aptchat-accent-h2), var(--aptchat-accent-s2), var(--aptchat-accent-l2));
   --aptchat-accent-grad: linear-gradient(135deg, var(--aptchat-accent-1), var(--aptchat-accent-2));
@@ -19,15 +52,16 @@
     hsla(var(--aptchat-accent-h), var(--aptchat-accent-s), var(--aptchat-accent-l), .28),
     hsla(var(--aptchat-accent-h2), var(--aptchat-accent-s2), var(--aptchat-accent-l2), .28)
   );
-  --aptchat-out-border: rgba(2,6,23,.10);
-}
-
-.aptChatMode{
   margin: -18px;
   padding: 18px;
-  background: radial-gradient(900px 600px at 20% 0%, rgba(59,130,246,.16), transparent 55%),
-              radial-gradient(700px 520px at 85% 30%, rgba(168,85,247,.12), transparent 55%),
-              var(--aptchat-bg);
+  background:
+    radial-gradient(900px 600px at 20% 0%, rgba(59,130,246,.16), transparent 55%),
+    radial-gradient(700px 520px at 85% 30%, rgba(168,85,247,.12), transparent 55%),
+    var(--aptchat-wallpaper),
+    var(--aptchat-bg);
+  background-size: auto, auto, cover, auto;
+  background-position: 0 0, 0 0, center, 0 0;
+  background-repeat: no-repeat;
 }
 
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -42,7 +76,8 @@
   inset: auto;
   border: 1px solid var(--aptchat-border);
   border-radius: 18px;
-  overflow: hidden;
+  /* Allow popovers (theme/wallpaper picker) to overflow outside the shell. */
+  overflow: visible;
   box-shadow: var(--aptchat-shadow);
   background: transparent;
   display: grid;
@@ -56,18 +91,151 @@
   border: 1px solid var(--aptchat-border);
   border-radius: 18px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.62)), var(--aptchat-accent-soft);
+  background:
+    linear-gradient(135deg, var(--aptchat-wallpaper-tint), rgba(255,255,255,.62)),
+    var(--aptchat-accent-soft);
 }
 
-.aptChatSidebar{display:flex;flex-direction:column;min-width:280px}
+.aptChatSidebar{
+  display:flex;
+  flex-direction:column;
+  min-width:280px;
+  /* Popovers are rendered inside the sidebar header. */
+  overflow: visible;
+}
 .aptChatSidebarHeader{
   padding: 14px 14px 12px;
   border-bottom: 1px solid var(--aptchat-border);
-  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.62)), var(--aptchat-accent-soft);
+  background:
+    linear-gradient(135deg, var(--aptchat-wallpaper-tint), rgba(255,255,255,.62)),
+    var(--aptchat-accent-soft);
   display:flex;
   justify-content:space-between;
   gap: 10px;
   align-items:flex-start;
+  position: relative;
+  z-index: 2;
+}
+.aptChatSidebarTools{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.aptChatPopoverWrap{position:relative}
+.aptChatPopover{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(520px, calc(100vh - 140px));
+  overflow:auto;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.86);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(15,23,42,.18);
+  z-index: 1000;
+}
+body[data-aptchat-theme="midnight"] .aptChatPopover{
+  border-color: rgba(148,163,184,.22);
+  background: rgba(15,23,42,.72);
+}
+.aptChatPopover[hidden]{display:none !important}
+
+body.aptChatPopoverOpen::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,.45);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+}
+.aptChatPopoverTitle{
+  font-weight: 950;
+  letter-spacing: .2px;
+  margin-bottom: 0;
+  color: rgba(15,23,42,.86);
+}
+body[data-aptchat-theme="midnight"] .aptChatPopoverTitle{color: rgba(226,232,240,.92)}
+.aptChatPopoverHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.aptChatPopoverClose{
+  padding: 8px 10px;
+}
+.aptChatSwatchGrid{
+  display:grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (max-width: 520px){.aptChatSwatchGrid{grid-template-columns: repeat(8, minmax(0, 1fr))}}
+.aptChatSwatch{
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: var(--swatch, rgba(15,23,42,.08));
+  cursor:pointer;
+  box-shadow: 0 10px 22px rgba(15,23,42,.10);
+  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+}
+.aptChatSwatch:hover{transform: translateY(-1px);filter: brightness(1.03);box-shadow: 0 14px 30px rgba(15,23,42,.14)}
+.aptChatSwatchActive{outline:3px solid rgba(59,130,246,.35);outline-offset:2px}
+body[data-aptchat-theme="midnight"] .aptChatSwatch{border-color: rgba(148,163,184,.22)}
+
+.aptChatWallpaperGrid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 520px){.aptChatWallpaperGrid{grid-template-columns: repeat(2, minmax(0, 1fr))}}
+.aptChatWallpaper{
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: center/cover no-repeat, rgba(15,23,42,.06);
+  cursor:pointer;
+  box-shadow: 0 10px 22px rgba(15,23,42,.10);
+  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+  position:relative;
+  overflow:hidden;
+}
+.aptChatWallpaper:hover{transform: translateY(-1px);filter: brightness(1.03);box-shadow: 0 14px 30px rgba(15,23,42,.14)}
+.aptChatWallpaperLabel{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  padding:4px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(15,23,42,.12);
+  font-weight: 950;
+  font-size: 12px;
+  color: rgba(15,23,42,.88);
+  backdrop-filter: blur(10px);
+}
+body[data-aptchat-theme="midnight"] .aptChatWallpaperLabel{
+  background: rgba(15,23,42,.58);
+  border-color: rgba(148,163,184,.22);
+  color: rgba(226,232,240,.92);
+}
+.aptChatWallpaperActive{outline:3px solid rgba(59,130,246,.35);outline-offset:2px}
+.aptChatBtnGhost{
+  background: rgba(255,255,255,.62);
+}
+body[data-aptchat-theme="midnight"] .aptChatBtnGhost{
+  background: rgba(15,23,42,.44);
+  border-color: rgba(148,163,184,.22);
+  color: rgba(226,232,240,.92);
 }
 .aptChatTitle{font-weight:900; letter-spacing:.2px}
 .aptChatSmall{color:var(--aptchat-muted); font-size:12px; line-height:1.4}
@@ -97,7 +265,35 @@
   display:grid;place-items:center;
   flex:0 0 auto;
   font-weight:900;
+  position: relative;
 }
+.aptChatAvatar::after{
+  content:"";
+  position:absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid var(--aptchat-panel);
+  background: transparent;
+  box-shadow: 0 8px 18px rgba(15,23,42,.18);
+  display:none;
+}
+.aptChatAvatar--admin::after{display:block;background:#ef4444}
+.aptChatAvatar--resident::after{display:block;background:#22c55e}
+.aptChatAvatar--guest::after{display:block;background:#f59e0b}
+
+.aptChatTitleRow{display:flex;align-items:center;gap:8px}
+.aptChatPeerDot{
+  width:10px;height:10px;border-radius:999px;
+  background: rgba(15,23,42,.18);
+  box-shadow: 0 10px 22px rgba(15,23,42,.14);
+  flex:0 0 auto;
+}
+.aptChatPeerDot--admin{background:#ef4444}
+.aptChatPeerDot--resident{background:#22c55e}
+.aptChatPeerDot--guest{background:#f59e0b}
 .aptChatMeta{min-width:0}
 .aptChatName{font-weight:800;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .aptChatType{font-size:12px;color:var(--aptchat-muted)}
@@ -107,7 +303,9 @@
   display:flex;align-items:center;justify-content:space-between;
   padding: 14px 16px;
   border-bottom: 1px solid var(--aptchat-border);
-  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.62)), var(--aptchat-accent-soft);
+  background:
+    linear-gradient(135deg, var(--aptchat-wallpaper-tint), rgba(255,255,255,.62)),
+    var(--aptchat-accent-soft);
 }
 .aptChatMainHeader .left{display:flex;flex-direction:column;min-width:0}
 .aptChatH1{font-weight:900}
@@ -181,8 +379,31 @@
   cursor:pointer;
   font-weight:900;
   white-space:nowrap;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  transform:translateY(0);
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
 }
-.aptChatBtn:hover{background: rgba(255,255,255,.96)}
+.aptChatBtn::before{
+  content:"";
+  position:absolute;
+  inset:-80% -40%;
+  background: radial-gradient(closest-side, rgba(255,255,255,.55), transparent 62%);
+  transform: translateX(-60%) rotate(10deg);
+  opacity: 0;
+  transition: opacity .18s ease, transform .28s ease;
+  z-index: 0;
+}
+.aptChatBtn > *{position:relative;z-index:1}
+.aptChatBtn:hover{
+  background: rgba(255,255,255,.96);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15,23,42,.10);
+}
+.aptChatBtn:hover::before{opacity:1;transform: translateX(10%) rotate(10deg)}
+.aptChatBtn:active{transform: translateY(0);filter: brightness(.98)}
+.aptChatBtn:focus-visible{outline:3px solid rgba(59,130,246,.35);outline-offset:3px}
 .aptChatBtnPrimary{
   background: var(--aptchat-accent-grad);
   border: 0;
@@ -212,6 +433,34 @@
 .aptChatTip{margin-top:10px;color: rgba(100,116,139,.92);font-size:12px}
 .aptChatHint{margin-top:8px}
 
+.aptChatUserList{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.aptChatUserEmpty{
+  border: 1px dashed rgba(15,23,42,.18);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.70);
+  color: rgba(15,23,42,.72);
+  font-weight:800;
+}
+.aptChatUserItem{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  padding: 10px 10px;
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 14px;
+  background: rgba(255,255,255,.86);
+  cursor:pointer;
+  font: inherit;
+  color: var(--aptchat-text);
+}
+.aptChatUserItem:hover{border-color: rgba(15,23,42,.18);background: rgba(255,255,255,.94)}
+.aptChatUserMeta{display:flex;flex-direction:column;min-width:0}
+.aptChatUserName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aptChatUserEmail{font-size:12px;color:var(--aptchat-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 .aptChatAlert{
   border: 1px solid rgba(15,23,42,.12);
   background: rgba(255,255,255,.92);
@@ -226,3 +475,37 @@
   .aptChatShellPage{grid-template-columns: 1fr}
   .aptChatMsgs{max-height: calc(100vh - 280px)}
 }
+
+/* Fullscreen chat page */
+body.aptChatRoute .aptTopbar{display:none}
+body.aptChatRoute .topbar{display:none}
+body.aptChatRoute .footer{display:none}
+body.aptChatPage{
+  overflow:hidden;
+}
+body.aptChatPage main.container{
+  max-width:none;
+  width:100%;
+  padding:0;
+  margin:0;
+}
+body.aptChatPage .aptChatMode{
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  background-attachment: fixed;
+}
+body.aptChatPage .aptChatShell,
+body.aptChatPage .aptChatShellPage{
+  height: 100%;
+}
+body.aptChatPage .aptChatShellPage{
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  gap: 12px;
+  padding: 12px;
+}
+body.aptChatPage .aptChatPanel{border-radius: 16px}
+body.aptChatPage .aptChatMsgs{max-height:none}

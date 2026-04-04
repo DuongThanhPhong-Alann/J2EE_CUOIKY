@@ -6,9 +6,11 @@
 		<div>
 			<h1>
 				<span th:text="${item.maCan}">A-101</span>
-				<span class="pill" th:text="${item.trangThai}">Trạng thái</span>
+				<span class="pill"
+				      th:classappend="${item.trangThai != null and #strings.contains(#strings.toLowerCase(item.trangThai), 'trống')} ? ' pill--green' : (${item.trangThai != null and (#strings.contains(#strings.toLowerCase(item.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(item.trangThai), 'ở'))} ? ' pill--blue' : (${item.trangThai != null and (#strings.contains(#strings.toLowerCase(item.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(item.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+				      th:text="${item.trangThai}">Trạng thái</span>
 			</h1>
-			<p class="muted" th:text="'#' + ${item.id}">#1</p>
+			<p class="muted" th:text="'#' + item.id">#1</p>
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/can-ho}">Danh sách</a>
@@ -28,7 +30,7 @@
 				<div class="kv__k">Chung cư</div>
 				<div class="kv__v">
 					<span th:if="${building != null}" th:text="${building.ten}">Chung cư</span>
-					<span th:if="${building == null}" th:text="'#' + ${item.idChungCu}">#</span>
+					<span th:if="${building == null}" th:text="'#' + item.idChungCu">#</span>
 				</div>
 			</div>
 			<div class="kv" th:if="${item.soPhong != null}">
@@ -46,6 +48,32 @@
 			<div class="kv" th:if="${item.moTa != null && !item.moTa.isBlank()}">
 				<div class="kv__k">Mô tả</div>
 				<div class="kv__v" th:text="${item.moTa}">...</div>
+			</div>
+
+			<div class="kv" th:if="${ownerUser != null}">
+				<div class="kv__k">Chủ hộ</div>
+				<div class="kv__v">
+					<div th:text="${ownerUser.hoTen}">Owner</div>
+					<div class="muted mono" th:text="${ownerUser.email}">owner@email</div>
+					<div class="card__actions" style="margin-top:10px">
+						<a class="btn btn--sm btn--primary" sec:authorize="isAuthenticated()"
+						   th:href="@{/chat/private/with/{id}(id=${ownerUser.id})}">Chat chủ hộ</a>
+						<a class="btn btn--sm" sec:authorize="isAnonymous()" th:href="@{/login}">Đăng nhập để chat</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="kv" th:if="${adminUsers != null && !#lists.isEmpty(adminUsers)}">
+				<div class="kv__k">Ban quản lý</div>
+				<div class="kv__v">
+					<div th:text="${adminUsers[0].hoTen}">Admin</div>
+					<div class="muted mono" th:text="${adminUsers[0].email}">admin@email</div>
+					<div class="card__actions" style="margin-top:10px">
+						<a class="btn btn--sm btn--danger" sec:authorize="isAuthenticated()"
+						   th:href="@{/chat/private/with/{id}(id=${adminUsers[0].id})}">Chat ban quản lý</a>
+						<a class="btn btn--sm" sec:authorize="isAnonymous()" th:href="@{/login}">Đăng nhập để chat</a>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -69,11 +97,11 @@
 	<div class="grid grid--2 section" th:if="${(item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()) || (item.model3DUrl != null && !item.model3DUrl.isBlank())}">
 		<div class="card" th:if="${item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()}">
 			<div class="card__title">Sketchfab</div>
-			<iframe class="embedFrame" th:src="${item.sketchfabUrl}" loading="lazy" allowfullscreen></iframe>
+			<iframe class="embedFrame" th:src="${item.sketchfabUrl}" loading="lazy" allow="fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
 		</div>
 		<div class="card" th:if="${item.model3DUrl != null && !item.model3DUrl.isBlank()}">
-			<div class="card__title">Model 3D</div>
-			<iframe class="embedFrame embedFrame--tall" th:src="${item.model3DUrl}" loading="lazy" allowfullscreen></iframe>
+			<div class="card__title">Momento360</div>
+			<iframe class="embedFrame embedFrame--tall" th:src="${item.model3DUrl}" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
 		</div>
 	</div>
 </section>
