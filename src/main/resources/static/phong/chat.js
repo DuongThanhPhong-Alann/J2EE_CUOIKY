@@ -98,7 +98,36 @@
   let currentTheme = 'aurora';
   let currentWallpaper = 'none';
 
+  const lsGet = (k) => {
+    try {
+      return localStorage.getItem(k);
+    } catch {
+      return null;
+    }
+  };
+
+  const lsSet = (k, v) => {
+    try {
+      localStorage.setItem(k, v);
+    } catch {
+      // ignore
+    }
+  };
+
   const persist = (patch) => {
+    // Save locally immediately so it survives reloads even if the API/DB is unavailable.
+    if (patch && typeof patch === 'object') {
+      if (patch.theme != null) {
+        lsSet('aptChatTheme', String(patch.theme));
+      }
+      if (patch.wallpaper != null) {
+        lsSet('aptChatBg', String(patch.wallpaper));
+      }
+      if (typeof patch.fullscreen === 'boolean') {
+        lsSet('aptChatFullscreen', patch.fullscreen ? '1' : '0');
+      }
+    }
+
     pendingPatch = { ...pendingPatch, ...patch };
     if (persistTimer) {
       clearTimeout(persistTimer);
@@ -120,18 +149,18 @@
         const saved = await res.json();
         if (saved?.theme) {
           currentTheme = saved.theme;
-          try { localStorage.setItem('aptChatTheme', saved.theme); } catch {}
+          lsSet('aptChatTheme', saved.theme);
           applyTheme(saved.theme);
           syncActiveSwatches();
         }
         if (saved?.wallpaper) {
           currentWallpaper = saved.wallpaper;
-          try { localStorage.setItem('aptChatBg', saved.wallpaper); } catch {}
+          lsSet('aptChatBg', saved.wallpaper);
           applyWallpaper(saved.wallpaper);
           syncActiveWallpapers();
         }
         if (typeof saved?.fullscreen === 'boolean') {
-          try { localStorage.setItem('aptChatFullscreen', saved.fullscreen ? '1' : '0'); } catch {}
+          lsSet('aptChatFullscreen', saved.fullscreen ? '1' : '0');
         }
       } catch {
         // ignore
@@ -142,12 +171,8 @@
   const setFullscreen = (on, options = {}) => {
     const enabled = Boolean(on);
     document.body.classList.toggle('aptChatPage', enabled);
-    try {
-      localStorage.setItem('aptChatFullscreen', enabled ? '1' : '0');
-    } catch {
-      // ignore
-    }
-  if (options.persist !== false) {
+    lsSet('aptChatFullscreen', enabled ? '1' : '0');
+    if (options.persist !== false) {
       persist({ fullscreen: enabled });
     }
     if (fullscreenBtn) {
@@ -156,17 +181,17 @@
   };
 
   try {
-    const storedFullscreen = localStorage.getItem('aptChatFullscreen');
+    const storedFullscreen = lsGet('aptChatFullscreen');
     setFullscreen(storedFullscreen === null ? true : storedFullscreen === '1', { persist: false });
   } catch {
     setFullscreen(true, { persist: false });
   }
 
   try {
-    currentTheme = localStorage.getItem('aptChatTheme') || 'aurora';
+    currentTheme = lsGet('aptChatTheme') || 'aurora';
     applyTheme(currentTheme);
 
-    currentWallpaper = localStorage.getItem('aptChatBg') || 'none';
+    currentWallpaper = lsGet('aptChatBg') || 'none';
     applyWallpaper(currentWallpaper);
   } catch {
     // ignore
@@ -181,6 +206,7 @@
   const hidePopovers = () => {
     if (themePopover) themePopover.hidden = true;
     if (bgPopover) bgPopover.hidden = true;
+    document.body.classList.remove('aptChatPopoverOpen');
   };
 
   const togglePopover = (popover) => {
@@ -188,6 +214,11 @@
     const willShow = popover.hidden;
     hidePopovers();
     popover.hidden = !willShow;
+    if (willShow) {
+      document.body.classList.add('aptChatPopoverOpen');
+    } else {
+      document.body.classList.remove('aptChatPopoverOpen');
+    }
   };
 
   if (themeBtn && themePopover) {
@@ -197,7 +228,14 @@
     });
   }
   if (themePopover) {
-    themePopover.addEventListener('click', (e) => e.stopPropagation());
+    themePopover.addEventListener('click', (e) => {
+      if (e.target?.closest?.('[data-close-popover]')) {
+        e.preventDefault();
+        hidePopovers();
+        return;
+      }
+      e.stopPropagation();
+    });
   }
   if (bgBtn && bgPopover) {
     bgBtn.addEventListener('click', (e) => {
@@ -206,7 +244,14 @@
     });
   }
   if (bgPopover) {
-    bgPopover.addEventListener('click', (e) => e.stopPropagation());
+    bgPopover.addEventListener('click', (e) => {
+      if (e.target?.closest?.('[data-close-popover]')) {
+        e.preventDefault();
+        hidePopovers();
+        return;
+      }
+      e.stopPropagation();
+    });
   }
 
   document.addEventListener('click', () => hidePopovers());
@@ -251,6 +296,7 @@
         applyTheme(currentTheme);
         syncActiveSwatches();
         persist({ theme: currentTheme });
+        hidePopovers();
       });
       themeGrid.appendChild(btn);
     }
@@ -290,6 +336,7 @@
         applyWallpaper(currentWallpaper);
         syncActiveWallpapers();
         persist({ wallpaper: currentWallpaper });
+        hidePopovers();
       });
 
       bgGrid.appendChild(btn);
@@ -309,22 +356,46 @@
       }
       const pref = await res.json();
 
-      if (pref?.theme) {
-        currentTheme = pref.theme;
-        applyTheme(pref.theme);
-        try { localStorage.setItem('aptChatTheme', pref.theme); } catch {}
-        syncActiveSwatches();
-      }
+      const localTheme = lsGet('aptChatTheme');
+      const localWallpaper = lsGet('aptChatBg');
+      const localFullscreen = lsGet('aptChatFullscreen');
 
-      if (pref?.wallpaper) {
-        currentWallpaper = pref.wallpaper;
-        applyWallpaper(pref.wallpaper);
-        try { localStorage.setItem('aptChatBg', pref.wallpaper); } catch {}
-        syncActiveWallpapers();
-      }
+      const serverTheme = pref?.theme ? String(pref.theme) : null;
+      const serverWallpaper = pref?.wallpaper ? String(pref.wallpaper) : null;
+      const serverFullscreen = typeof pref?.fullscreen === 'boolean' ? pref.fullscreen : null;
 
-      if (typeof pref?.fullscreen === 'boolean') {
-        setFullscreen(pref.fullscreen, { persist: false });
+      const serverLooksDefault =
+        serverTheme === 'aurora' &&
+        serverWallpaper === 'none' &&
+        serverFullscreen === true;
+
+      const localLooksCustom =
+        (localTheme != null && localTheme !== 'aurora') ||
+        (localWallpaper != null && localWallpaper !== 'none') ||
+        (localFullscreen != null && localFullscreen !== '1');
+
+      // If the server falls back to defaults (e.g. missing DB table) and the user has
+      // local overrides, keep local overrides instead of overwriting them with defaults.
+      const shouldApplyServer = !(serverLooksDefault && localLooksCustom);
+
+      if (shouldApplyServer) {
+        if (serverTheme) {
+          currentTheme = serverTheme;
+          applyTheme(serverTheme);
+          lsSet('aptChatTheme', serverTheme);
+          syncActiveSwatches();
+        }
+
+        if (serverWallpaper) {
+          currentWallpaper = serverWallpaper;
+          applyWallpaper(serverWallpaper);
+          lsSet('aptChatBg', serverWallpaper);
+          syncActiveWallpapers();
+        }
+
+        if (serverFullscreen != null) {
+          setFullscreen(serverFullscreen, { persist: false });
+        }
       }
     } catch {
       // ignore

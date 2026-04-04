@@ -1,7 +1,4 @@
 -- Creates ChatUserPreferences table for existing databases.
---
--- Usage:
---   mysql -h 127.0.0.1 -P 3306 -u root apt < db/mysql/apt_migrate_chat_user_preferences.sql
 
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
@@ -21,4 +18,3 @@ CREATE TABLE IF NOT EXISTS `ChatUserPreferences` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
-
