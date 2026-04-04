@@ -64,15 +64,15 @@
 						<div th:text="${usersById[cd.idNguoiDung].hoTen}">Tên</div>
 						<div class="muted mono" th:text="${usersById[cd.idNguoiDung].email}">email</div>
 					</div>
-					<div th:if="${usersById[cd.idNguoiDung] == null}" class="muted" th:text="'#' + ${cd.idNguoiDung}">#</div>
+					<div th:if="${usersById[cd.idNguoiDung] == null}" class="muted" th:text="'#' + cd.idNguoiDung">#</div>
 				</td>
 				<td>
 					<div th:if="${apartmentsById[cd.idCanHo] != null}" class="mono" th:text="${apartmentsById[cd.idCanHo].maCan}">A-101</div>
-					<div th:if="${apartmentsById[cd.idCanHo] == null}" class="muted" th:text="'#' + ${cd.idCanHo}">#</div>
+					<div th:if="${apartmentsById[cd.idCanHo] == null}" class="muted" th:text="'#' + cd.idCanHo">#</div>
 				</td>
-				<td th:text="${buildingNames[cd.idChungCu]} != null ? ${buildingNames[cd.idChungCu]} : ('#' + cd.idChungCu)">Chung cư</td>
+				<td th:text="${buildingNames[cd.idChungCu] != null ? buildingNames[cd.idChungCu] : ('#' + cd.idChungCu)}">Chung cư</td>
 				<td>
-					<span class="pill" th:text="${cd.laChuHo} ? 'Có' : 'Không'">Không</span>
+					<span class="pill" th:classappend="${cd.laChuHo} ? ' pill--green' : ' pill--red'" th:text="${cd.laChuHo} ? 'Có' : 'Không'">Không</span>
 				</td>
 				<td class="td-actions">
 					<a class="btn btn--sm" th:href="@{/cu-dan/{id}(id=${cd.id})}">Xem</a>
@@ -103,11 +103,11 @@
 			</div>
 			<div class="kv">
 				<div class="kv__k">Chung cư</div>
-				<div class="kv__v" th:text="${buildingNames[cd.idChungCu]} != null ? ${buildingNames[cd.idChungCu]} : ('#' + cd.idChungCu)">Chung cư</div>
+				<div class="kv__v" th:text="${buildingNames[cd.idChungCu] != null ? buildingNames[cd.idChungCu] : ('#' + cd.idChungCu)}">Chung cư</div>
 			</div>
 			<div class="kv">
 				<div class="kv__k">Chủ hộ</div>
-				<div class="kv__v"><span class="pill" th:text="${cd.laChuHo} ? 'Có' : 'Không'">Không</span></div>
+				<div class="kv__v"><span class="pill" th:classappend="${cd.laChuHo} ? ' pill--green' : ' pill--red'" th:text="${cd.laChuHo} ? 'Có' : 'Không'">Không</span></div>
 			</div>
 
 			<div class="card__actions" style="margin-top:12px">

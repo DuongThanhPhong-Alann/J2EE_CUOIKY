@@ -49,12 +49,12 @@
 				<div class="aptChatMsgList" th:if="${!#lists.isEmpty(messages)}">
 					<div class="aptChatMsg"
 					     th:each="m : ${messages}"
-					     th:classappend="${m.idNguoiGui} == ${meId} ? ' me' : ''">
+					     th:classappend="${m.idNguoiGui == meId} ? ' me' : ''">
 						<div class="aptChatBubble">
 							<div class="aptChatMetaLine">
 								<div class="aptChatSenderWrap">
 									<div class="aptChatSender"
-									     th:text="${sendersById[m.idNguoiGui]} != null ? sendersById[m.idNguoiGui].hoTen : ('#' + m.idNguoiGui)">
+									     th:text="${sendersById[m.idNguoiGui]?.hoTen ?: ('#' + m.idNguoiGui)}">
 										Sender
 									</div>
 								</div>

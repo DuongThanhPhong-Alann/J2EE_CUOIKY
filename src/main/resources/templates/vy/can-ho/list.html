@@ -56,9 +56,11 @@
 				</td>
 				<td>
 					<div class="mono" th:text="${a.maCan}">A-01</div>
-					<div class="pill" th:text="${a.trangThai}">Trạng thái</div>
+					<div class="pill"
+					     th:classappend="${a.trangThai != null and #strings.contains(#strings.toLowerCase(a.trangThai), 'trống')} ? ' pill--green' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(a.trangThai), 'ở'))} ? ' pill--blue' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(a.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+					     th:text="${a.trangThai}">Trạng thái</div>
 				</td>
-				<td th:text="${buildingNames[a.idChungCu]} != null ? ${buildingNames[a.idChungCu]} : ('#' + a.idChungCu)">Chung cư</td>
+				<td th:text="${buildingNames[a.idChungCu] != null ? buildingNames[a.idChungCu] : ('#' + a.idChungCu)}">Chung cư</td>
 				<td th:text="${a.soPhong}">0</td>
 				<td th:text="${a.dienTich}">0</td>
 				<td th:text="${a.gia}">0</td>
@@ -99,12 +101,14 @@
 				<div class="aptApartmentBody">
 					<div class="aptApartmentTitle">
 						<div class="mono" th:text="${a.maCan}">A-01</div>
-						<span class="pill" th:text="${a.trangThai}">Trạng thái</span>
+						<span class="pill"
+						      th:classappend="${a.trangThai != null and #strings.contains(#strings.toLowerCase(a.trangThai), 'trống')} ? ' pill--green' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(a.trangThai), 'ở'))} ? ' pill--blue' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(a.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+						      th:text="${a.trangThai}">Trạng thái</span>
 					</div>
 
 					<div class="kv">
 						<div class="kv__k">Chung cư</div>
-						<div class="kv__v" th:text="${buildingNames[a.idChungCu]} != null ? ${buildingNames[a.idChungCu]} : ('#' + a.idChungCu)">Chung cư</div>
+						<div class="kv__v" th:text="${buildingNames[a.idChungCu] != null ? buildingNames[a.idChungCu] : ('#' + a.idChungCu)}">Chung cư</div>
 					</div>
 					<div class="kv">
 						<div class="kv__k">Số phòng</div>

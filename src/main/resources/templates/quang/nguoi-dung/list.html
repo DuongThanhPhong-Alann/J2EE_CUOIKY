@@ -32,7 +32,9 @@
 				<td th:text="${u.hoTen}">Họ tên</td>
 				<td class="mono" th:text="${u.email}">email</td>
 				<td>
-					<span class="pill" th:text="${u.loaiNguoiDung}">Loai</span>
+					<span class="pill"
+					      th:classappend="${u.loaiNguoiDung != null and #strings.contains(#strings.toUpperCase(u.loaiNguoiDung), 'ADMIN')} ? ' pill--purple' : ' pill--blue'"
+					      th:text="${u.loaiNguoiDung}">Loai</span>
 				</td>
 				<td class="td-actions">
 					<a class="btn btn--sm" th:href="@{/nguoi-dung/{id}(id=${u.id})}">Xem</a>

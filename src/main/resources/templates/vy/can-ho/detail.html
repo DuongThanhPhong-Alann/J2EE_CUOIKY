@@ -6,9 +6,11 @@
 		<div>
 			<h1>
 				<span th:text="${item.maCan}">A-101</span>
-				<span class="pill" th:text="${item.trangThai}">Trạng thái</span>
+				<span class="pill"
+				      th:classappend="${item.trangThai != null and #strings.contains(#strings.toLowerCase(item.trangThai), 'trống')} ? ' pill--green' : (${item.trangThai != null and (#strings.contains(#strings.toLowerCase(item.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(item.trangThai), 'ở'))} ? ' pill--blue' : (${item.trangThai != null and (#strings.contains(#strings.toLowerCase(item.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(item.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+				      th:text="${item.trangThai}">Trạng thái</span>
 			</h1>
-			<p class="muted" th:text="'#' + ${item.id}">#1</p>
+			<p class="muted" th:text="'#' + item.id">#1</p>
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/can-ho}">Danh sách</a>
@@ -28,7 +30,7 @@
 				<div class="kv__k">Chung cư</div>
 				<div class="kv__v">
 					<span th:if="${building != null}" th:text="${building.ten}">Chung cư</span>
-					<span th:if="${building == null}" th:text="'#' + ${item.idChungCu}">#</span>
+					<span th:if="${building == null}" th:text="'#' + item.idChungCu">#</span>
 				</div>
 			</div>
 			<div class="kv" th:if="${item.soPhong != null}">
