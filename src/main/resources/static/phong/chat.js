@@ -25,6 +25,11 @@
   const bgPopover = document.getElementById('chatBgPopover');
   const bgGrid = document.getElementById('chatBgGrid');
 
+  const userSearchBtn = document.getElementById('chatUserSearchBtn');
+  const userSearchPopover = document.getElementById('chatUserSearchPopover');
+  const userSearchInput = document.getElementById('chatUserSearchInput');
+  const userSearchList = document.getElementById('chatUserSearchList');
+
   const fullscreenBtn = document.getElementById('chatFullscreenBtn');
 
   const PRESET_THEMES = new Set(['aurora', 'ocean', 'grape', 'emerald', 'sunset', 'midnight']);
@@ -206,6 +211,7 @@
   const hidePopovers = () => {
     if (themePopover) themePopover.hidden = true;
     if (bgPopover) bgPopover.hidden = true;
+    if (userSearchPopover) userSearchPopover.hidden = true;
     document.body.classList.remove('aptChatPopoverOpen');
   };
 
@@ -254,12 +260,125 @@
     });
   }
 
+  if (userSearchBtn && userSearchPopover) {
+    userSearchBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePopover(userSearchPopover);
+      if (!userSearchPopover.hidden) {
+        queueSearch('');
+        setTimeout(() => userSearchInput?.focus(), 0);
+      }
+    });
+  }
+  if (userSearchPopover) {
+    userSearchPopover.addEventListener('click', (e) => {
+      if (e.target?.closest?.('[data-close-popover]')) {
+        e.preventDefault();
+        hidePopovers();
+        return;
+      }
+      e.stopPropagation();
+    });
+  }
+
   document.addEventListener('click', () => hidePopovers());
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       hidePopovers();
     }
   });
+
+  let searchTimer = null;
+  let searchAbort = null;
+
+  const renderUserResults = (items) => {
+    if (!userSearchList) return;
+    userSearchList.innerHTML = '';
+
+    const list = Array.isArray(items) ? items : [];
+    if (!list.length) {
+      const empty = document.createElement('div');
+      empty.className = 'aptChatUserEmpty';
+      empty.textContent = 'Không có gợi ý.';
+      userSearchList.appendChild(empty);
+      return;
+    }
+
+    for (const it of list) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `aptChatUserItem aptChatUserItem--${it.role || 'guest'}`;
+      btn.addEventListener('click', () => {
+        if (it?.id) {
+          window.location.href = `/chat/private/with/${encodeURIComponent(String(it.id))}`;
+        }
+      });
+
+      const dot = document.createElement('span');
+      dot.className = `aptChatPeerDot aptChatPeerDot--${it.role || 'guest'}`;
+      dot.setAttribute('aria-hidden', 'true');
+
+      const meta = document.createElement('span');
+      meta.className = 'aptChatUserMeta';
+
+      const name = document.createElement('span');
+      name.className = 'aptChatUserName';
+      name.textContent = String(it?.name || it?.email || '');
+
+      const email = document.createElement('span');
+      email.className = 'aptChatUserEmail';
+      email.textContent = String(it?.email || '');
+
+      meta.appendChild(name);
+      meta.appendChild(email);
+
+      btn.appendChild(dot);
+      btn.appendChild(meta);
+
+      userSearchList.appendChild(btn);
+    }
+  };
+
+  const queueSearch = (q) => {
+    if (!userSearchPopover || userSearchPopover.hidden) return;
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => runSearch(q), 180);
+  };
+
+  const runSearch = async (q) => {
+    const query = String(q ?? '');
+    if (!userSearchList) return;
+
+    if (searchAbort) {
+      try { searchAbort.abort(); } catch {}
+    }
+    searchAbort = new AbortController();
+
+    try {
+      const url = `/chat/private/search?q=${encodeURIComponent(query)}`;
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: searchAbort.signal });
+      if (!res.ok) {
+        renderUserResults([]);
+        return;
+      }
+      const data = await res.json();
+      renderUserResults(data);
+    } catch {
+      renderUserResults([]);
+    }
+  };
+
+  if (userSearchInput) {
+    userSearchInput.addEventListener('input', () => queueSearch(userSearchInput.value));
+    userSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const email = String(userSearchInput.value || '').trim();
+        if (!email) return;
+        window.location.href = `/chat/private/open?email=${encodeURIComponent(email)}`;
+      }
+    });
+  }
 
   const THEMES = buildThemeList100();
 

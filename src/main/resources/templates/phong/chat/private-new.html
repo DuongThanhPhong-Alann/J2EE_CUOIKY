@@ -39,7 +39,8 @@
 					<form method="post" th:action="@{/chat/private/new}">
 						<label class="aptChatField">
 							<span>Email</span>
-							<input class="aptChatInput" type="email" name="email" placeholder="user@apt.local" required />
+							<input class="aptChatInput" type="email" name="email" placeholder="user@apt.local"
+							       th:value="${email}" required />
 						</label>
 						<button class="aptChatBtn aptChatBtnPrimary" type="submit">Tạo chat</button>
 					</form>

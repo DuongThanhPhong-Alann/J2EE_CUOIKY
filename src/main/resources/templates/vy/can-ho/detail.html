@@ -49,6 +49,32 @@
 				<div class="kv__k">Mô tả</div>
 				<div class="kv__v" th:text="${item.moTa}">...</div>
 			</div>
+
+			<div class="kv" th:if="${ownerUser != null}">
+				<div class="kv__k">Chủ hộ</div>
+				<div class="kv__v">
+					<div th:text="${ownerUser.hoTen}">Owner</div>
+					<div class="muted mono" th:text="${ownerUser.email}">owner@email</div>
+					<div class="card__actions" style="margin-top:10px">
+						<a class="btn btn--sm btn--primary" sec:authorize="isAuthenticated()"
+						   th:href="@{/chat/private/with/{id}(id=${ownerUser.id})}">Chat chủ hộ</a>
+						<a class="btn btn--sm" sec:authorize="isAnonymous()" th:href="@{/login}">Đăng nhập để chat</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="kv" th:if="${adminUsers != null && !#lists.isEmpty(adminUsers)}">
+				<div class="kv__k">Ban quản lý</div>
+				<div class="kv__v">
+					<div th:text="${adminUsers[0].hoTen}">Admin</div>
+					<div class="muted mono" th:text="${adminUsers[0].email}">admin@email</div>
+					<div class="card__actions" style="margin-top:10px">
+						<a class="btn btn--sm btn--danger" sec:authorize="isAuthenticated()"
+						   th:href="@{/chat/private/with/{id}(id=${adminUsers[0].id})}">Chat ban quản lý</a>
+						<a class="btn btn--sm" sec:authorize="isAnonymous()" th:href="@{/login}">Đăng nhập để chat</a>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="card">
@@ -71,11 +97,11 @@
 	<div class="grid grid--2 section" th:if="${(item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()) || (item.model3DUrl != null && !item.model3DUrl.isBlank())}">
 		<div class="card" th:if="${item.sketchfabUrl != null && !item.sketchfabUrl.isBlank()}">
 			<div class="card__title">Sketchfab</div>
-			<iframe class="embedFrame" th:src="${item.sketchfabUrl}" loading="lazy" allowfullscreen></iframe>
+			<iframe class="embedFrame" th:src="${item.sketchfabUrl}" loading="lazy" allow="fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
 		</div>
 		<div class="card" th:if="${item.model3DUrl != null && !item.model3DUrl.isBlank()}">
-			<div class="card__title">Model 3D</div>
-			<iframe class="embedFrame embedFrame--tall" th:src="${item.model3DUrl}" loading="lazy" allowfullscreen></iframe>
+			<div class="card__title">Momento360</div>
+			<iframe class="embedFrame embedFrame--tall" th:src="${item.model3DUrl}" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
 		</div>
 	</div>
 </section>

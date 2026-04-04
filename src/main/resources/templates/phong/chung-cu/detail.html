@@ -53,5 +53,78 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="section" style="margin-top:16px">
+		<div class="section__head">
+			<h2>Căn hộ</h2>
+			<a class="link" th:href="@{/can-ho(idChungCu=${item.id})}">Xem tất cả</a>
+		</div>
+
+		<div class="card" style="padding:12px;margin-bottom:14px">
+			<div class="card__actions">
+				<a class="btn btn--sm"
+				   th:classappend="${view == 'trong'} ? ' btn--primary' : ''"
+				   th:href="@{/chung-cu/{id}(id=${item.id}, view='trong')}">Căn trống</a>
+				<a class="btn btn--sm"
+				   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
+				   th:classappend="${view == 'dang-o'} ? ' btn--primary' : ''"
+				   th:href="@{/chung-cu/{id}(id=${item.id}, view='dang-o')}">Đang ở</a>
+				<a class="btn btn--sm"
+				   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
+				   th:classappend="${view == 'bao-tri'} ? ' btn--primary' : ''"
+				   th:href="@{/chung-cu/{id}(id=${item.id}, view='bao-tri')}">Bảo trì</a>
+				<a class="btn btn--sm"
+				   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
+				   th:classappend="${view == 'tat-ca'} ? ' btn--primary' : ''"
+				   th:href="@{/chung-cu/{id}(id=${item.id}, view='tat-ca')}">Tất cả</a>
+			</div>
+			<p class="muted" sec:authorize="isAnonymous()" style="margin:8px 0 0">
+				Khách chỉ xem được căn hộ đang <b>Trống</b>. Đăng nhập để xem thêm.
+			</p>
+		</div>
+
+		<div class="grid grid--3">
+			<div class="card" th:if="${#lists.isEmpty(apartments)}">
+				<div class="muted">Chưa có căn hộ nào (hoặc bạn không có quyền xem).</div>
+			</div>
+
+			<a class="aptCardLink" th:each="a : ${apartments}" th:href="@{/can-ho/{id}(id=${a.id})}">
+				<article class="card aptApartmentCard">
+					<div class="aptApartmentImgWrap">
+						<img class="aptApartmentImg"
+						     loading="lazy"
+						     th:if="${thumbByApartmentId[a.id] != null}"
+						     th:src="${thumbByApartmentId[a.id]}"
+						     th:alt="${a.maCan}" />
+						<div class="aptApartmentImgPlaceholder" th:if="${thumbByApartmentId[a.id] == null}">
+							<div class="mono" th:text="${a.maCan}">A-01</div>
+						</div>
+					</div>
+
+					<div class="aptApartmentBody">
+						<div class="aptApartmentTitle">
+							<div class="mono" th:text="${a.maCan}">A-01</div>
+							<span class="pill"
+							      th:classappend="${a.trangThai != null and #strings.contains(#strings.toLowerCase(a.trangThai), 'trống')} ? ' pill--green' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'đang') or #strings.contains(#strings.toLowerCase(a.trangThai), 'ở'))} ? ' pill--blue' : (${a.trangThai != null and (#strings.contains(#strings.toLowerCase(a.trangThai), 'bảo trì') or #strings.contains(#strings.toLowerCase(a.trangThai), 'sửa'))} ? ' pill--amber' : ''))"
+							      th:text="${a.trangThai}">Trạng thái</span>
+						</div>
+
+						<div class="kv">
+							<div class="kv__k">Số phòng</div>
+							<div class="kv__v" th:text="${a.soPhong}">0</div>
+						</div>
+						<div class="kv">
+							<div class="kv__k">Diện tích</div>
+							<div class="kv__v" th:text="${a.dienTich}">0</div>
+						</div>
+						<div class="kv">
+							<div class="kv__k">Giá</div>
+							<div class="kv__v" th:text="${a.gia}">0</div>
+						</div>
+					</div>
+				</article>
+			</a>
+		</div>
+	</div>
 </section>
 </html>

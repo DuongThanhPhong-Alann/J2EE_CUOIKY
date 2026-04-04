@@ -265,7 +265,35 @@ body[data-aptchat-theme="midnight"] .aptChatBtnGhost{
   display:grid;place-items:center;
   flex:0 0 auto;
   font-weight:900;
+  position: relative;
 }
+.aptChatAvatar::after{
+  content:"";
+  position:absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid var(--aptchat-panel);
+  background: transparent;
+  box-shadow: 0 8px 18px rgba(15,23,42,.18);
+  display:none;
+}
+.aptChatAvatar--admin::after{display:block;background:#ef4444}
+.aptChatAvatar--resident::after{display:block;background:#22c55e}
+.aptChatAvatar--guest::after{display:block;background:#f59e0b}
+
+.aptChatTitleRow{display:flex;align-items:center;gap:8px}
+.aptChatPeerDot{
+  width:10px;height:10px;border-radius:999px;
+  background: rgba(15,23,42,.18);
+  box-shadow: 0 10px 22px rgba(15,23,42,.14);
+  flex:0 0 auto;
+}
+.aptChatPeerDot--admin{background:#ef4444}
+.aptChatPeerDot--resident{background:#22c55e}
+.aptChatPeerDot--guest{background:#f59e0b}
 .aptChatMeta{min-width:0}
 .aptChatName{font-weight:800;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .aptChatType{font-size:12px;color:var(--aptchat-muted)}
@@ -404,6 +432,34 @@ body[data-aptchat-theme="midnight"] .aptChatBtnGhost{
 .aptChatField span{font-weight:900;color: rgba(15,23,42,.75)}
 .aptChatTip{margin-top:10px;color: rgba(100,116,139,.92);font-size:12px}
 .aptChatHint{margin-top:8px}
+
+.aptChatUserList{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.aptChatUserEmpty{
+  border: 1px dashed rgba(15,23,42,.18);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.70);
+  color: rgba(15,23,42,.72);
+  font-weight:800;
+}
+.aptChatUserItem{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  padding: 10px 10px;
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 14px;
+  background: rgba(255,255,255,.86);
+  cursor:pointer;
+  font: inherit;
+  color: var(--aptchat-text);
+}
+.aptChatUserItem:hover{border-color: rgba(15,23,42,.18);background: rgba(255,255,255,.94)}
+.aptChatUserMeta{display:flex;flex-direction:column;min-width:0}
+.aptChatUserName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aptChatUserEmail{font-size:12px;color:var(--aptchat-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .aptChatAlert{
   border: 1px solid rgba(15,23,42,.12);
