@@ -298,6 +298,18 @@ CREATE TABLE IF NOT EXISTS `ChatMessages` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `ChatUserPreferences` (
+  `ID_NguoiDung` BIGINT NOT NULL,
+  `Theme` VARCHAR(128) NOT NULL DEFAULT 'aurora',
+  `Wallpaper` VARCHAR(16) NOT NULL DEFAULT 'none',
+  `Fullscreen` TINYINT(1) NOT NULL DEFAULT 1,
+  `UpdatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID_NguoiDung`),
+  CONSTRAINT `FK_ChatUserPreferences_NguoiDungs`
+    FOREIGN KEY (`ID_NguoiDung`) REFERENCES `NguoiDungs` (`ID`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Seed data ------------------------------------------------------------------
 
 INSERT INTO `ChungCus` (`Ten`, `DiaChi`, `ChuDauTu`, `NamXayDung`, `SoTang`, `MoTa`)
