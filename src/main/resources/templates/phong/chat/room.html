@@ -12,22 +12,22 @@
 					<div class="aptChatTitle">Chat</div>
 					<div class="aptChatSmall" th:text="${me.hoTen}">Me</div>
 					<div class="aptChatSidebarTools">
-						<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatFullscreenBtn">ToÃ n mÃ n hÃ¬nh</button>
+						<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatFullscreenBtn">Toàn màn hình</button>
 						<div class="aptChatPopoverWrap">
-							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatThemeBtn">Chá»§ Ä‘á»</button>
+							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatThemeBtn">Chủ đề</button>
 							<div class="aptChatPopover" id="chatThemePopover" hidden>
 								<div class="aptChatPopoverHeader">
-									<div class="aptChatPopoverTitle">Chá»§ Ä‘á» (100 mÃ u)</div>
+									<div class="aptChatPopoverTitle">Chủ đề (100 màu)</div>
 									<button class="aptChatBtn aptChatBtnGhost aptChatPopoverClose" type="button" data-close-popover>Close</button>
 								</div>
 								<div class="aptChatSwatchGrid" id="chatThemeGrid"></div>
 							</div>
 						</div>
 						<div class="aptChatPopoverWrap">
-							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatBgBtn">áº¢nh ná»n</button>
+							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatBgBtn">Ảnh nền</button>
 							<div class="aptChatPopover" id="chatBgPopover" hidden>
 								<div class="aptChatPopoverHeader">
-									<div class="aptChatPopoverTitle">áº¢nh ná»n</div>
+									<div class="aptChatPopoverTitle">Ảnh nền</div>
 									<button class="aptChatBtn aptChatBtnGhost aptChatPopoverClose" type="button" data-close-popover>Close</button>
 								</div>
 								<div class="aptChatWallpaperGrid" id="chatBgGrid"></div>
@@ -82,12 +82,13 @@
 				</div>
 				<div class="right">
 					<a class="aptChatBtn" th:if="${chat.loai == 'building' && chat.idChungCu != null}"
-					   th:href="@{/chung-cu/{id}(id=${chat.idChungCu})}">Xem chung cÆ°</a>
+					   th:href="@{/chung-cu/{id}(id=${chat.idChungCu})}">Xem chung cư</a>
+					<a class="aptChatBtn aptChatBtnGhost" th:href="@{/}">Thoát</a>
 				</div>
 			</header>
 
 			<div class="aptChatMsgs" id="msgs">
-				<div class="aptChatEmpty" th:if="${#lists.isEmpty(messages)}">ChÆ°a cÃ³ tin nháº¯n. Gá»­i tin nháº¯n Ä‘áº§u tiÃªn nhÃ©.</div>
+				<div class="aptChatEmpty" th:if="${#lists.isEmpty(messages)}">Chưa có tin nhắn. Gửi tin nhắn đầu tiên nhé.</div>
 				<div class="aptChatMsgList" th:if="${!#lists.isEmpty(messages)}">
 					<div class="aptChatMsg"
 					     th:each="m : ${messages}"
@@ -111,10 +112,10 @@
 
 			<div class="aptChatComposer">
 				<form class="aptChatComposerRow" method="post" th:action="@{/chat/{id}/messages(id=${chat.id})}">
-					<textarea class="aptChatTextarea" name="noiDung" rows="1" placeholder="Nháº­p tin nháº¯n..." required></textarea>
-					<button class="aptChatBtn aptChatBtnPrimary" type="submit">Gá»­i</button>
+					<textarea class="aptChatTextarea" name="noiDung" rows="1" placeholder="Nhập tin nhắn..." required></textarea>
+					<button class="aptChatBtn aptChatBtnPrimary" type="submit">Gửi</button>
 				</form>
-				<div class="aptChatSmall aptChatHint">Máº¹o: Enter Ä‘á»ƒ gá»­i, Shift+Enter Ä‘á»ƒ xuá»‘ng dÃ²ng.</div>
+				<div class="aptChatSmall aptChatHint">Mẹo: Enter để gửi, Shift+Enter để xuống dòng.</div>
 			</div>
 		</section>
 	</div>

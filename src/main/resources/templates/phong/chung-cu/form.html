@@ -54,6 +54,28 @@
 				<span class="field__label">Mô tả</span>
 				<textarea class="input" rows="4" th:field="*{moTa}" placeholder="Thông tin thêm về chung cư..."></textarea>
 			</label>
+
+			<label class="field">
+				<span class="field__label">Thêm ảnh (URL)</span>
+				<textarea class="input" rows="4" th:field="*{imageUrls}" placeholder="Mỗi URL ảnh một dòng&#10;VD: https://.../1.jpg&#10;https://.../2.png"></textarea>
+			</label>
+
+			<div class="card" th:if="${mode == 'edit'}">
+				<div class="card__title">Ảnh hiện có</div>
+				<p class="muted" th:if="${#lists.isEmpty(images)}">Chưa có hình ảnh.</p>
+				<p class="muted" th:if="${!#lists.isEmpty(images)}">
+					Tick ảnh cần xóa rồi bấm <b>Lưu thay đổi</b>.
+				</p>
+				<div class="img-grid" th:if="${!#lists.isEmpty(images)}">
+					<div class="img-item" th:each="img : ${images}">
+						<img class="img" th:src="${img.duongDan}" th:alt="${form.ten}" />
+						<label class="img-remove">
+							<input type="checkbox" name="deleteImageIds" th:value="${img.id}" />
+							<span>Xóa</span>
+						</label>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="form-actions">

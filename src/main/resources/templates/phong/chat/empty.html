@@ -10,20 +10,20 @@
 			<div class="aptChatSidebarHeader">
 				<div>
 					<div class="aptChatTitle">Chat</div>
-					<div class="aptChatSmall">ChÆ°a cÃ³ phÃ²ng chat Ä‘á»ƒ hiá»ƒn thá»‹.</div>
+					<div class="aptChatSmall">Chưa có phòng chat để hiển thị.</div>
 					<div class="aptChatSidebarTools">
-						<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatFullscreenBtn">ToÃ n mÃ n hÃ¬nh</button>
+						<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatFullscreenBtn">Toàn màn hình</button>
 						<div class="aptChatPopoverWrap">
-							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatThemeBtn">Chá»§ Ä‘á»</button>
+							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatThemeBtn">Chủ đề</button>
 							<div class="aptChatPopover" id="chatThemePopover" hidden>
-								<div class="aptChatPopoverTitle">Chá»§ Ä‘á» (100 mÃ u)</div>
+								<div class="aptChatPopoverTitle">Chủ đề (100 màu)</div>
 								<div class="aptChatSwatchGrid" id="chatThemeGrid"></div>
 							</div>
 						</div>
 						<div class="aptChatPopoverWrap">
-							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatBgBtn">áº¢nh ná»n</button>
+							<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatBgBtn">Ảnh nền</button>
 							<div class="aptChatPopover" id="chatBgPopover" hidden>
-								<div class="aptChatPopoverTitle">áº¢nh ná»n</div>
+								<div class="aptChatPopoverTitle">Ảnh nền</div>
 								<div class="aptChatWallpaperGrid" id="chatBgGrid"></div>
 							</div>
 						</div>
@@ -46,24 +46,27 @@
 </div>
 			</div>
 			<div class="aptChatSidebarBody">
-				<div class="aptChatEmpty">Báº¡n cáº§n lÃ  cÆ° dÃ¢n cá»§a 1 chung cÆ° hoáº·c táº¡o chat riÃªng.</div>
+				<div class="aptChatEmpty">Bạn cần là cư dân của 1 chung cư hoặc tạo chat riêng.</div>
 			</div>
 		</div>
 
 		<div class="aptChatPanel aptChatMain">
 			<div class="aptChatMainHeader">
 				<div class="left">
-					<div class="aptChatH1">Chá»n má»™t cuá»™c trÃ² chuyá»‡n</div>
-					<div class="aptChatH2">Táº¡o chat riÃªng hoáº·c tham gia nhÃ³m chung cÆ° cá»§a báº¡n.</div>
+					<div class="aptChatH1">Chọn một cuộc trò chuyện</div>
+					<div class="aptChatH2">Tạo chat riêng hoặc tham gia nhóm chung cư của bạn.</div>
+				</div>
+				<div class="right">
+					<a class="aptChatBtn aptChatBtnGhost" th:href="@{/}">Thoát</a>
 				</div>
 			</div>
 			<div class="aptChatMsgs">
-				<div class="aptChatEmpty">KhÃ´ng cÃ³ dá»¯ liá»‡u.</div>
+				<div class="aptChatEmpty">Không có dữ liệu.</div>
 			</div>
 			<div class="aptChatComposer">
 				<div class="aptChatComposerRow">
-					<textarea class="aptChatTextarea" rows="1" placeholder="Nháº­p tin nháº¯n..." disabled></textarea>
-					<button class="aptChatBtn disabled" type="button">Gá»­i</button>
+					<textarea class="aptChatTextarea" rows="1" placeholder="Nhập tin nhắn..." disabled></textarea>
+					<button class="aptChatBtn disabled" type="button">Gửi</button>
 				</div>
 			</div>
 		</div>

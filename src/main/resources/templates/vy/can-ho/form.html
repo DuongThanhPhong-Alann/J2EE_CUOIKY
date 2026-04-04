@@ -82,9 +82,37 @@
 			</label>
 
 			<label class="field">
-				<span class="field__label">URLs (khác)</span>
-				<textarea class="input" rows="3" th:field="*{urls}" placeholder="Mỗi URL một dòng (tuỳ bạn)"></textarea>
+				<span class="field__label">Ảnh (URL)</span>
+				<textarea class="input" rows="4" th:field="*{urls}" placeholder="Mỗi URL ảnh một dòng&#10;VD: https://.../1.jpg&#10;https://.../2.png"></textarea>
 			</label>
+
+			<div class="card" th:if="${mode == 'edit'}">
+				<div class="card__title">Ảnh hiện có</div>
+				<p class="muted" th:if="${#lists.isEmpty(urlImages) && #lists.isEmpty(images)}">Chưa có hình ảnh.</p>
+				<p class="muted" th:if="${!#lists.isEmpty(urlImages) || !#lists.isEmpty(images)}">
+					Tick ảnh cần xóa rồi bấm <b>Lưu thay đổi</b>.
+				</p>
+
+				<div class="img-grid" th:if="${!#lists.isEmpty(urlImages)}">
+					<div class="img-item" th:each="u : ${urlImages}">
+						<img class="img" th:src="${u}" th:alt="${form.maCan}" />
+						<label class="img-remove">
+							<input type="checkbox" name="deleteUrlImages" th:value="${u}" />
+							<span>Xóa</span>
+						</label>
+					</div>
+				</div>
+
+				<div class="img-grid" th:if="${!#lists.isEmpty(images)}">
+					<div class="img-item" th:each="img : ${images}" th:if="${urlImageSet == null || !urlImageSet.contains(img.duongDan)}">
+						<img class="img" th:src="${img.duongDan}" th:alt="${form.maCan}" />
+						<label class="img-remove">
+							<input type="checkbox" name="deleteImageIds" th:value="${img.id}" />
+							<span>Xóa</span>
+						</label>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="form-actions">
