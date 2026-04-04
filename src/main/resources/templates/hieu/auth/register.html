@@ -19,7 +19,7 @@
 
 	<div class="alert alert--danger" th:if="${formError}" th:text="${formError}">Lỗi</div>
 
-	<form method="post" th:action="@{/register}" th:object="${form}">
+	<form class="auth-form" method="post" th:action="@{/register}" th:object="${form}">
 		<label class="field">
 			<span class="field__label">Họ tên</span>
 			<input class="input" type="text" th:field="*{hoTen}" required />
@@ -28,7 +28,7 @@
 
 		<label class="field">
 			<span class="field__label">Email</span>
-			<input class="input" type="email" th:field="*{email}" autocomplete="username" required />
+			<input class="input input--icon input--email" type="email" th:field="*{email}" autocomplete="username" required />
 			<span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Lỗi</span>
 		</label>
 
@@ -39,7 +39,7 @@
 
 		<label class="field">
 			<span class="field__label">Mật khẩu</span>
-			<input class="input" type="password" th:field="*{matKhau}" autocomplete="new-password" required />
+			<input class="input input--icon input--password" type="password" th:field="*{matKhau}" autocomplete="new-password" required />
 			<span class="error" th:if="${#fields.hasErrors('matKhau')}" th:errors="*{matKhau}">Lỗi</span>
 		</label>
 
