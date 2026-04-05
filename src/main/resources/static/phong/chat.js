@@ -30,6 +30,14 @@
   const userSearchInput = document.getElementById('chatUserSearchInput');
   const userSearchList = document.getElementById('chatUserSearchList');
 
+  const shareAptBtn = document.getElementById('chatShareAptBtn');
+  const shareAptPopover = document.getElementById('chatShareAptPopover');
+  const shareBuildingSelect = document.getElementById('chatShareBuildingSelect');
+  const shareApartmentSelect = document.getElementById('chatShareApartmentSelect');
+  const shareApartmentLink = document.getElementById('chatShareApartmentLink');
+  const shareCopyBtn = document.getElementById('chatShareCopyLinkBtn');
+  const shareInsertBtn = document.getElementById('chatShareInsertLinkBtn');
+
   const fullscreenBtn = document.getElementById('chatFullscreenBtn');
 
   const PRESET_THEMES = new Set(['aurora', 'ocean', 'grape', 'emerald', 'sunset', 'midnight']);
@@ -212,6 +220,7 @@
     if (themePopover) themePopover.hidden = true;
     if (bgPopover) bgPopover.hidden = true;
     if (userSearchPopover) userSearchPopover.hidden = true;
+    if (shareAptPopover) shareAptPopover.hidden = true;
     document.body.classList.remove('aptChatPopoverOpen');
   };
 
@@ -281,6 +290,27 @@
     });
   }
 
+  if (shareAptBtn && shareAptPopover) {
+    shareAptBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePopover(shareAptPopover);
+      if (!shareAptPopover.hidden) {
+        setTimeout(() => shareBuildingSelect?.focus?.(), 0);
+        initApartmentShare();
+      }
+    });
+  }
+  if (shareAptPopover) {
+    shareAptPopover.addEventListener('click', (e) => {
+      if (e.target?.closest?.('[data-close-popover]')) {
+        e.preventDefault();
+        hidePopovers();
+        return;
+      }
+      e.stopPropagation();
+    });
+  }
+
   document.addEventListener('click', () => hidePopovers());
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -290,6 +320,8 @@
 
   let searchTimer = null;
   let searchAbort = null;
+  let shareInitPromise = null;
+  let shareApartmentsAbort = null;
 
   const renderUserResults = (items) => {
     if (!userSearchList) return;
@@ -378,6 +410,175 @@
         window.location.href = `/chat/private/open?email=${encodeURIComponent(email)}`;
       }
     });
+  }
+
+  async function initApartmentShare() {
+    if (!shareBuildingSelect || !shareApartmentSelect || !shareApartmentLink || !shareCopyBtn || !shareInsertBtn) {
+      return;
+    }
+
+    if (!shareAptPopover?.dataset?.wired) {
+      shareAptPopover.dataset.wired = '1';
+
+      shareBuildingSelect.addEventListener('change', () => {
+        const buildingId = String(shareBuildingSelect.value || '');
+        resetShareSelection();
+        if (buildingId) {
+          loadShareApartments(buildingId);
+        }
+      });
+
+      shareApartmentSelect.addEventListener('change', () => updateShareLink());
+
+      shareCopyBtn.addEventListener('click', async () => {
+        const v = String(shareApartmentLink.value || '').trim();
+        if (!v) return;
+        try {
+          await navigator.clipboard.writeText(v);
+          shareCopyBtn.textContent = 'Đã copy';
+          setTimeout(() => (shareCopyBtn.textContent = 'Copy'), 900);
+        } catch {
+          try {
+            shareApartmentLink.focus();
+            shareApartmentLink.select();
+            document.execCommand('copy');
+          } catch {
+            // ignore
+          }
+        }
+      });
+
+      shareInsertBtn.addEventListener('click', () => {
+        const v = String(shareApartmentLink.value || '').trim();
+        if (!v) return;
+        const textarea = document.querySelector('.aptChatTextarea[name="noiDung"]');
+        if (!textarea) return;
+
+        const before = String(textarea.value || '');
+        const needsNewline = before && !before.endsWith('\n');
+        textarea.value = before + (needsNewline ? '\n' : '') + v;
+        textarea.focus();
+        hidePopovers();
+      });
+    }
+
+    if (shareInitPromise) {
+      return shareInitPromise;
+    }
+
+    shareInitPromise = (async () => {
+      shareBuildingSelect.disabled = true;
+      shareBuildingSelect.innerHTML = '<option value="">Đang tải...</option>';
+      shareApartmentSelect.disabled = true;
+      shareApartmentSelect.innerHTML = '<option value="">Chọn chung cư trước</option>';
+      shareApartmentLink.value = '';
+      shareCopyBtn.disabled = true;
+      shareInsertBtn.disabled = true;
+
+      try {
+        const res = await fetch('/chat/share/buildings', { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) {
+          throw new Error('bad response');
+        }
+        const buildings = await res.json();
+        const list = Array.isArray(buildings) ? buildings : [];
+
+        shareBuildingSelect.innerHTML = '<option value="">Chọn chung cư</option>';
+        for (const b of list) {
+          if (!b?.id) continue;
+          const opt = document.createElement('option');
+          opt.value = String(b.id);
+          opt.textContent = String(b.name || `Chung cư #${b.id}`);
+          shareBuildingSelect.appendChild(opt);
+        }
+
+        shareBuildingSelect.disabled = false;
+        if (shareBuildingSelect.options.length === 2) {
+          // auto-pick when only 1 building available
+          shareBuildingSelect.selectedIndex = 1;
+          loadShareApartments(String(shareBuildingSelect.value));
+        }
+      } catch {
+        shareBuildingSelect.innerHTML = '<option value="">Không tải được danh sách chung cư</option>';
+        shareInitPromise = null;
+      } finally {
+        shareBuildingSelect.disabled = false;
+      }
+    })();
+
+    try {
+      await shareInitPromise;
+    } catch {
+      // ignore
+    }
+  }
+
+  function resetShareSelection() {
+    if (shareApartmentSelect) {
+      shareApartmentSelect.disabled = true;
+      shareApartmentSelect.innerHTML = '<option value="">Đang tải...</option>';
+    }
+    if (shareApartmentLink) {
+      shareApartmentLink.value = '';
+    }
+    if (shareCopyBtn) shareCopyBtn.disabled = true;
+    if (shareInsertBtn) shareInsertBtn.disabled = true;
+  }
+
+  async function loadShareApartments(buildingId) {
+    if (!shareApartmentSelect) return;
+    const id = String(buildingId || '').trim();
+    if (!id) return;
+
+    if (shareApartmentsAbort) {
+      try { shareApartmentsAbort.abort(); } catch {}
+    }
+    shareApartmentsAbort = new AbortController();
+
+    shareApartmentSelect.disabled = true;
+    shareApartmentSelect.innerHTML = '<option value="">Đang tải...</option>';
+
+    try {
+      const url = `/chat/share/apartments?buildingId=${encodeURIComponent(id)}`;
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: shareApartmentsAbort.signal });
+      if (!res.ok) {
+        throw new Error('bad response');
+      }
+      const apartments = await res.json();
+      const list = Array.isArray(apartments) ? apartments : [];
+
+      shareApartmentSelect.innerHTML = '<option value="">Chọn căn hộ</option>';
+      for (const a of list) {
+        if (!a?.id) continue;
+        const opt = document.createElement('option');
+        opt.value = String(a.id);
+        const code = a.code ? String(a.code) : `#${a.id}`;
+        const status = a.status ? ` • ${String(a.status)}` : '';
+        opt.textContent = `${code}${status}`;
+        shareApartmentSelect.appendChild(opt);
+      }
+
+      shareApartmentSelect.disabled = false;
+    } catch {
+      shareApartmentSelect.innerHTML = '<option value="">Không tải được danh sách căn hộ</option>';
+      shareApartmentSelect.disabled = true;
+    }
+  }
+
+  function updateShareLink() {
+    if (!shareApartmentSelect || !shareApartmentLink || !shareCopyBtn || !shareInsertBtn) return;
+    const aptId = String(shareApartmentSelect.value || '').trim();
+    if (!aptId) {
+      shareApartmentLink.value = '';
+      shareCopyBtn.disabled = true;
+      shareInsertBtn.disabled = true;
+      return;
+    }
+
+    const url = new URL(`/can-ho/${encodeURIComponent(aptId)}`, window.location.origin).toString();
+    shareApartmentLink.value = url;
+    shareCopyBtn.disabled = false;
+    shareInsertBtn.disabled = false;
   }
 
   const THEMES = buildThemeList100();
@@ -529,6 +730,8 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
+  linkifyChatMessages();
+
   if (textarea && form) {
     textarea.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -537,6 +740,65 @@
       }
     });
   }
+
+  const linkifyChatMessages = () => {
+    const els = document.querySelectorAll('.aptChatText');
+    for (const el of els) {
+      if (el.dataset.linkified === '1') continue;
+      const raw = String(el.textContent || '');
+      el.dataset.linkified = '1';
+      if (!raw) continue;
+
+      const html = linkifyText(raw);
+      if (html !== escapeHtml(raw)) {
+        el.innerHTML = html;
+      }
+    }
+  };
+
+  const escapeHtml = (str) => {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+
+  const linkifyText = (raw) => {
+    const text = String(raw || '');
+    const re = new RegExp('https?:\\/\\/[^\\s]+', 'g');
+    let out = '';
+    let last = 0;
+    let m;
+
+    while ((m = re.exec(text))) {
+      const start = m.index;
+      const full = String(m[0] || '');
+      if (start > last) {
+        out += escapeHtml(text.slice(last, start));
+      }
+
+      let url = full;
+      let trailing = '';
+      while (url && /[),.;!?]$/.test(url)) {
+        trailing = url.slice(-1) + trailing;
+        url = url.slice(0, -1);
+      }
+
+      const safeUrl = escapeHtml(url);
+      out += `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeUrl}</a>`;
+      if (trailing) {
+        out += escapeHtml(trailing);
+      }
+      last = start + full.length;
+    }
+
+    if (last < text.length) {
+      out += escapeHtml(text.slice(last));
+    }
+    return out;
+  };
 
   function hexToRgb(hex) {
     const h = String(hex || '').replace('#', '').toLowerCase();

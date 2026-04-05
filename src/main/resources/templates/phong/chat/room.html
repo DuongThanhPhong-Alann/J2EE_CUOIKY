@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{apt/fragments/app-layout :: pageWithHead(${chatTitle}, ~{::section}, ~{::extraHead})}">
 <th:block th:fragment="extraHead">
 	<link rel="stylesheet" th:href="@{/phong/apt-chat.css}" />
@@ -112,6 +112,40 @@
 
 			<div class="aptChatComposer">
 				<form class="aptChatComposerRow" method="post" th:action="@{/chat/{id}/messages(id=${chat.id})}">
+					<div class="aptChatPopoverWrap" sec:authorize="hasAnyRole('ADMIN','RESIDENT')">
+						<button class="aptChatBtn aptChatBtnGhost" type="button" id="chatShareAptBtn">Link căn hộ</button>
+						<div class="aptChatPopover" id="chatShareAptPopover" hidden>
+							<div class="aptChatPopoverHeader">
+								<div class="aptChatPopoverTitle">Gửi link căn hộ</div>
+								<button class="aptChatBtn aptChatBtnGhost aptChatPopoverClose" type="button" data-close-popover>Close</button>
+							</div>
+
+							<label class="aptChatField">
+								<span>Chung cư</span>
+								<select class="aptChatInput" id="chatShareBuildingSelect">
+									<option value="">Đang tải...</option>
+								</select>
+							</label>
+
+							<label class="aptChatField">
+								<span>Căn hộ</span>
+								<select class="aptChatInput" id="chatShareApartmentSelect" disabled>
+									<option value="">Chọn chung cư trước</option>
+								</select>
+							</label>
+
+							<label class="aptChatField">
+								<span>Link</span>
+								<input class="aptChatInput mono" id="chatShareApartmentLink" type="text" readonly placeholder="Chọn căn hộ để lấy link" />
+							</label>
+
+							<div class="aptChatSidebarTools" style="margin-top:8px">
+								<button class="aptChatBtn" type="button" id="chatShareCopyLinkBtn" disabled>Copy</button>
+								<button class="aptChatBtn aptChatBtnPrimary" type="button" id="chatShareInsertLinkBtn" disabled>Chèn vào tin nhắn</button>
+							</div>
+							<div class="aptChatTip">Mẹo: Chèn link rồi nhấn Enter để gửi.</div>
+						</div>
+					</div>
 					<textarea class="aptChatTextarea" name="noiDung" rows="1" placeholder="Nhập tin nhắn..." required></textarea>
 					<button class="aptChatBtn aptChatBtnPrimary" type="submit">Gửi</button>
 				</form>
