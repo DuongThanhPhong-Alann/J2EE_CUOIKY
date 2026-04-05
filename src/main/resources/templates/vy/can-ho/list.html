@@ -25,6 +25,8 @@
 				</option>
 			</select>
 		</label>
+		<input type="hidden" name="view" th:value="${view}" />
+		<input type="hidden" name="cuaToi" th:value="${cuaToi}" />
 		<button class="btn" type="submit">Lọc</button>
 		<a class="btn" th:href="@{/can-ho}">Reset</a>
 	</form>
@@ -33,19 +35,26 @@
 		<div class="card__actions">
 			<a class="btn btn--sm"
 			   th:classappend="${view == 'trong'} ? ' btn--primary' : ''"
-			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='trong')}">Căn trống</a>
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='trong', cuaToi=${cuaToi})}">Căn trống</a>
 			<a class="btn btn--sm"
 			   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
 			   th:classappend="${view == 'dang-o'} ? ' btn--primary' : ''"
-			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='dang-o')}">Đang ở</a>
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='dang-o', cuaToi=${cuaToi})}">Đang ở</a>
 			<a class="btn btn--sm"
 			   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
 			   th:classappend="${view == 'bao-tri'} ? ' btn--primary' : ''"
-			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='bao-tri')}">Bảo trì</a>
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='bao-tri', cuaToi=${cuaToi})}">Bảo trì</a>
 			<a class="btn btn--sm"
 			   sec:authorize="hasAnyRole('ADMIN','RESIDENT')"
 			   th:classappend="${view == 'tat-ca'} ? ' btn--primary' : ''"
-			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='tat-ca')}">Tất cả</a>
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view='tat-ca', cuaToi=${cuaToi})}">Tất cả</a>
+			<a class="btn btn--sm"
+			   sec:authorize="isAuthenticated()"
+			   th:if="${hasMyApartments}"
+			   th:classappend="${cuaToi} ? ' btn--primary' : ''"
+			   th:href="@{/can-ho(idChungCu=${selectedBuildingId}, view=${view}, cuaToi=${!cuaToi})}">
+				Căn hộ của tôi
+			</a>
 		</div>
 		<p class="muted" sec:authorize="isAnonymous()" style="margin:8px 0 0">
 			Khách chỉ xem được căn hộ đang <b>Trống</b>. Đăng nhập để xem thêm.

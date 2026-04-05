@@ -14,7 +14,7 @@
 		</div>
 		<div class="page-head__actions">
 			<a class="btn" th:href="@{/can-ho}">Danh sách</a>
-			<a class="btn btn--primary" sec:authorize="hasRole('ADMIN')" th:href="@{/can-ho/{id}/sua(id=${item.id})}">Sửa</a>
+			<a class="btn btn--primary" th:if="${canEditApartment}" th:href="@{/can-ho/{id}/sua(id=${item.id})}">Sửa</a>
 			<form class="inline" sec:authorize="hasRole('ADMIN')" th:action="@{/can-ho/{id}/xoa(id=${item.id})}" method="post">
 				<button class="btn btn--danger" type="submit"
 				        onclick="return confirm('Xóa căn hộ này?');">
@@ -48,6 +48,10 @@
 			<div class="kv" th:if="${item.moTa != null && !item.moTa.isBlank()}">
 				<div class="kv__k">Mô tả</div>
 				<div class="kv__v" th:text="${item.moTa}">...</div>
+			</div>
+			<div class="kv" th:if="${canEditApartment}">
+				<div class="kv__k">Quyền chỉnh sửa</div>
+				<div class="kv__v muted">Bạn có thể cập nhật giá và mô tả của căn hộ này.</div>
 			</div>
 
 			<div class="kv" th:if="${ownerUser != null}">
