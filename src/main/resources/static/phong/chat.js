@@ -726,26 +726,7 @@
     }
   })();
 
-  const textarea = document.querySelector('.aptChatTextarea[name="noiDung"]');
-  const form = textarea?.closest('form');
-  const msgs = document.getElementById('msgs');
-
-  if (msgs) {
-    msgs.scrollTop = msgs.scrollHeight;
-  }
-
-  linkifyChatMessages();
-
-  if (textarea && form) {
-    textarea.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        form.requestSubmit();
-      }
-    });
-  }
-
-  const linkifyChatMessages = () => {
+  function linkifyChatMessages() {
     const els = document.querySelectorAll('.aptChatText');
     for (const el of els) {
       if (el.dataset.linkified === '1') continue;
@@ -758,18 +739,18 @@
         el.innerHTML = html;
       }
     }
-  };
+  }
 
-  const escapeHtml = (str) => {
+  function escapeHtml(str) {
     return String(str || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#39;');
-  };
+  }
 
-  const linkifyText = (raw) => {
+  function linkifyText(raw) {
     const text = String(raw || '');
     const re = new RegExp('https?:\\/\\/[^\\s]+', 'g');
     let out = '';
@@ -802,7 +783,147 @@
       out += escapeHtml(text.slice(last));
     }
     return out;
-  };
+  }
+
+  const textarea = document.querySelector('.aptChatTextarea[name="noiDung"]');
+  const form = textarea?.closest('form');
+  const msgs = document.getElementById('msgs');
+  const chatId = String(msgs?.dataset?.chatId || '').trim();
+
+  function getLastRenderedMessageId() {
+    const lastEl = msgs?.querySelector('.aptChatMsg[data-message-id]:last-of-type');
+    return Number(lastEl?.dataset?.messageId || 0) || 0;
+  }
+
+  function isNearBottom() {
+    if (!msgs) return true;
+    return msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 80;
+  }
+
+  function scrollMessagesToBottom() {
+    if (!msgs) return;
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function renderMessages(items) {
+    if (!msgs) return;
+
+    const list = Array.isArray(items) ? items : [];
+    const currentLastId = getLastRenderedMessageId();
+    const nextLastId = list.length ? Number(list[list.length - 1]?.id || 0) || 0 : 0;
+    const shouldStickBottom = isNearBottom();
+
+    if (nextLastId === currentLastId && Number(msgs.dataset.renderedCount || 0) === list.length) {
+      return;
+    }
+
+    if (!list.length) {
+      msgs.innerHTML = '<div class="aptChatEmpty">Chưa có tin nhắn. Gửi tin nhắn đầu tiên nhé.</div>';
+      msgs.dataset.renderedCount = '0';
+      return;
+    }
+
+    const html = list.map((item) => {
+      const msgClass = item?.mine ? 'aptChatMsg me' : 'aptChatMsg';
+      const senderName = escapeHtml(item?.senderName || `#${item?.senderId || ''}`);
+      const time = escapeHtml(item?.time || '');
+      const text = linkifyText(item?.text || '');
+      const id = escapeHtml(item?.id || '');
+
+      return `
+        <div class="${msgClass}" data-message-id="${id}">
+          <div class="aptChatBubble">
+            <div class="aptChatMetaLine">
+              <div class="aptChatSenderWrap">
+                <div class="aptChatSender">${senderName}</div>
+              </div>
+              <div class="aptChatTime">${time}</div>
+            </div>
+            <div class="aptChatText" data-linkified="1">${text}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    msgs.innerHTML = `<div class="aptChatMsgList">${html}<div id="bottom"></div></div>`;
+    msgs.dataset.renderedCount = String(list.length);
+
+    if (shouldStickBottom || nextLastId > currentLastId) {
+      scrollMessagesToBottom();
+    }
+  }
+
+  let pollTimer = null;
+  let pollInFlight = false;
+
+  async function pollMessages() {
+    if (!msgs || !chatId || pollInFlight) {
+      scheduleNextPoll();
+      return;
+    }
+
+    if (document.hidden) {
+      scheduleNextPoll();
+      return;
+    }
+
+    pollInFlight = true;
+    try {
+      const res = await fetch(`/chat/${encodeURIComponent(chatId)}/messages/poll`, {
+        headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
+        cache: 'no-store',
+      });
+      if (!res.ok) {
+        return;
+      }
+      const data = await res.json();
+      renderMessages(data?.messages || []);
+    } catch {
+      // ignore
+    } finally {
+      pollInFlight = false;
+      scheduleNextPoll();
+    }
+  }
+
+  function scheduleNextPoll() {
+    if (!msgs || !chatId) return;
+    if (pollTimer) clearTimeout(pollTimer);
+    pollTimer = setTimeout(pollMessages, 1000);
+  }
+
+  if (msgs) {
+    scrollMessagesToBottom();
+  }
+
+  linkifyChatMessages();
+
+  if (textarea && form) {
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+  }
+
+  if (msgs && chatId) {
+    scheduleNextPoll();
+  }
+
+  window.addEventListener('pagehide', () => {
+    if (pollTimer) {
+      clearTimeout(pollTimer);
+      pollTimer = null;
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (pollTimer) {
+      clearTimeout(pollTimer);
+      pollTimer = null;
+    }
+  });
 
   function hexToRgb(hex) {
     const h = String(hex || '').replace('#', '').toLowerCase();

@@ -40,7 +40,7 @@
 				<input type="hidden" th:field="*{idChungCu}" />
 			</label>
 
-			<label class="field" th:if="${!residentEditable}">
+			<label class="field" th:if="${residentEditable == null || !residentEditable}">
 				<span class="field__label">Chung cư <span class="req">*</span></span>
 				<select class="input" th:field="*{idChungCu}">
 					<option value="" disabled th:selected="${form.idChungCu == null}">-- Chọn chung cư --</option>

@@ -87,11 +87,12 @@
 				</div>
 			</header>
 
-			<div class="aptChatMsgs" id="msgs">
+			<div class="aptChatMsgs" id="msgs" th:attr="data-chat-id=${chat.id}">
 				<div class="aptChatEmpty" th:if="${#lists.isEmpty(messages)}">Chưa có tin nhắn. Gửi tin nhắn đầu tiên nhé.</div>
 				<div class="aptChatMsgList" th:if="${!#lists.isEmpty(messages)}">
 					<div class="aptChatMsg"
 					     th:each="m : ${messages}"
+					     th:attr="data-message-id=${m.id}"
 					     th:classappend="${m.idNguoiGui == meId} ? ' me' : ''">
 						<div class="aptChatBubble">
 							<div class="aptChatMetaLine">
