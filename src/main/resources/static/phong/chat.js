@@ -741,7 +741,7 @@
     });
   }
 
-  function linkifyChatMessages() {
+  const linkifyChatMessages = () => {
     const els = document.querySelectorAll('.aptChatText');
     for (const el of els) {
       if (el.dataset.linkified === '1') continue;
@@ -754,20 +754,20 @@
         el.innerHTML = html;
       }
     }
-  }
+  };
 
-  function escapeHtml(str) {
+  const escapeHtml = (str) => {
     return String(str || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#39;');
-  }
+  };
 
-  function linkifyText(raw) {
+  const linkifyText = (raw) => {
     const text = String(raw || '');
-    const re = /https?:\/\/[^\s]+/g;
+    const re = new RegExp('https?:\\/\\/[^\\s]+', 'g');
     let out = '';
     let last = 0;
     let m;
@@ -798,7 +798,7 @@
       out += escapeHtml(text.slice(last));
     }
     return out;
-  }
+  };
 
   function hexToRgb(hex) {
     const h = String(hex || '').replace('#', '').toLowerCase();
