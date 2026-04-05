@@ -18,18 +18,29 @@
 		Lỗi
 	</div>
 
+	<div class="alert" th:if="${residentEditable}">
+		Bạn đang sửa căn hộ với quyền chủ hộ. Bạn được phép đổi <b>giá</b>, <b>mô tả</b> và <b>media</b> của căn hộ.
+	</div>
+
 	<form class="form"
 	      th:action="${mode == 'edit'} ? @{/can-ho/{id}/sua(id=${item.id})} : @{/can-ho/them}"
 	      th:object="${form}"
 	      method="post">
 		<div class="form-grid">
 			<label class="field">
-				<span class="field__label">Mã căn <span class="req">*</span></span>
-				<input class="input" type="text" th:field="*{maCan}" placeholder="VD: A-101" />
+				<span class="field__label" th:classappend="${residentEditable} ? ' field__label--locked' : ''">Mã căn <span class="req">*</span></span>
+				<input class="input" type="text" th:field="*{maCan}" placeholder="VD: A-101" th:readonly="${residentEditable}" th:classappend="${residentEditable} ? ' input--locked' : ''" />
 				<span class="error" th:if="${#fields.hasErrors('maCan')}" th:errors="*{maCan}">Lỗi</span>
 			</label>
+			<label class="field" th:if="${residentEditable}">
+				<span class="field__label field__label--locked">Chung cư</span>
+				<input class="input input--locked" type="text"
+				       th:value="${residentBuildingName}"
+				       readonly />
+				<input type="hidden" th:field="*{idChungCu}" />
+			</label>
 
-			<label class="field">
+			<label class="field" th:if="${!residentEditable}">
 				<span class="field__label">Chung cư <span class="req">*</span></span>
 				<select class="input" th:field="*{idChungCu}">
 					<option value="" disabled th:selected="${form.idChungCu == null}">-- Chọn chung cư --</option>
@@ -40,14 +51,14 @@
 
 			<div class="row">
 				<label class="field">
-					<span class="field__label">Số phòng</span>
-					<input class="input" type="number" th:field="*{soPhong}" placeholder="VD: 2" />
+					<span class="field__label" th:classappend="${residentEditable} ? ' field__label--locked' : ''">Số phòng</span>
+					<input class="input" type="number" th:field="*{soPhong}" placeholder="VD: 2" th:readonly="${residentEditable}" th:classappend="${residentEditable} ? ' input--locked' : ''" />
 					<span class="error" th:if="${#fields.hasErrors('soPhong')}" th:errors="*{soPhong}">Lỗi</span>
 				</label>
 
 				<label class="field">
-					<span class="field__label">Diện tích</span>
-					<input class="input" type="number" step="0.01" th:field="*{dienTich}" placeholder="VD: 68.5" />
+					<span class="field__label" th:classappend="${residentEditable} ? ' field__label--locked' : ''">Diện tích</span>
+					<input class="input" type="number" step="0.01" th:field="*{dienTich}" placeholder="VD: 68.5" th:readonly="${residentEditable}" th:classappend="${residentEditable} ? ' input--locked' : ''" />
 					<span class="error" th:if="${#fields.hasErrors('dienTich')}" th:errors="*{dienTich}">Lỗi</span>
 				</label>
 			</div>
@@ -60,8 +71,8 @@
 				</label>
 
 				<label class="field">
-					<span class="field__label">Trạng thái <span class="req">*</span></span>
-					<input class="input" type="text" th:field="*{trangThai}" placeholder="VD: Dang ban / Da ban / Dang thue" />
+					<span class="field__label" th:classappend="${residentEditable} ? ' field__label--locked' : ''">Trạng thái <span class="req">*</span></span>
+					<input class="input" type="text" th:field="*{trangThai}" placeholder="VD: Dang ban / Da ban / Dang thue" th:readonly="${residentEditable}" th:classappend="${residentEditable} ? ' input--locked' : ''" />
 					<span class="error" th:if="${#fields.hasErrors('trangThai')}" th:errors="*{trangThai}">Lỗi</span>
 				</label>
 			</div>
@@ -122,3 +133,4 @@
 	</form>
 </section>
 </html>
+

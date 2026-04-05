@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{apt/fragments/app-layout :: page('Thông tin cá nhân', ~{::section})}">
+<section>
+	<div class="page-head">
+		<div>
+			<h1>Thông tin cá nhân</h1>
+			<p class="muted">Thông tin tài khoản và căn hộ đang ở hoặc làm chủ hộ.</p>
+		</div>
+	</div>
+
+	<div class="grid grid--2">
+		<div class="card">
+			<div class="kv">
+				<div class="kv__k">Họ tên</div>
+				<div class="kv__v" th:text="${item.hoTen}">Họ tên</div>
+			</div>
+			<div class="kv">
+				<div class="kv__k">Email</div>
+				<div class="kv__v mono" th:text="${item.email}">email</div>
+			</div>
+			<div class="kv" th:if="${item.soDienThoai != null && !item.soDienThoai.isBlank()}">
+				<div class="kv__k">Số điện thoại</div>
+				<div class="kv__v" th:text="${item.soDienThoai}">0123</div>
+			</div>
+			<div class="kv">
+				<div class="kv__k">Loại tài khoản</div>
+				<div class="kv__v">
+					<span class="pill"
+					      th:classappend="${item.loaiNguoiDung != null and #strings.contains(#strings.toUpperCase(item.loaiNguoiDung), 'ADMIN')} ? ' pill--purple' : ' pill--blue'"
+					      th:text="${item.loaiNguoiDung}">Loai</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card__title">Căn hộ của tôi</div>
+			<div th:if="${#lists.isEmpty(residences)}" class="muted">Hiện chưa có thông tin cư dân/căn hộ được gán.</div>
+			<div th:each="entry : ${residences}">
+				<div class="kv">
+					<div class="kv__k">Chung cư</div>
+					<div class="kv__v" th:text="${entry.building != null ? entry.building.ten : ('#' + entry.resident.idChungCu)}">Chung cư</div>
+				</div>
+				<div class="kv">
+					<div class="kv__k">Căn hộ</div>
+					<div class="kv__v">
+						<span class="mono" th:text="${entry.apartment != null ? entry.apartment.maCan : ('#' + entry.resident.idCanHo)}">A-101</span>
+					</div>
+				</div>
+				<div class="kv">
+					<div class="kv__k">Vai trò</div>
+					<div class="kv__v">
+						<span class="pill" th:classappend="${entry.resident.laChuHo ? ' pill--green' : ' pill--blue'}"
+						      th:text="${entry.resident.laChuHo ? 'Chủ hộ' : 'Cư dân đang ở'}">Chủ hộ</span>
+					</div>
+				</div>
+				<div class="card__actions" style="margin-bottom:12px">
+					<a class="btn btn--sm" th:if="${entry.apartment != null}" th:href="@{/can-ho/{id}(id=${entry.apartment.id})}">Xem căn hộ</a>
+					<a class="btn btn--sm" th:if="${entry.building != null}" th:href="@{/chung-cu/{id}(id=${entry.building.id})}">Xem chung cư</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</html>
+

@@ -146,7 +146,7 @@ body[data-aptchat-theme="midnight"] .aptChatPopover{
 }
 .aptChatPopover[hidden]{display:none !important}
 
-body.aptChatPopoverOpen::before{
+body.aptChatRoute.aptChatPopoverOpen::before{
   content:"";
   position: fixed;
   inset: 0;
@@ -480,32 +480,32 @@ body[data-aptchat-theme="midnight"] .aptChatBtnGhost{
 body.aptChatRoute .aptTopbar{display:none}
 body.aptChatRoute .topbar{display:none}
 body.aptChatRoute .footer{display:none}
-body.aptChatPage{
+body.aptChatRoute.aptChatPage{
   overflow:hidden;
 }
-body.aptChatPage main.container{
+body.aptChatRoute.aptChatPage main.container{
   max-width:none;
   width:100%;
   padding:0;
   margin:0;
 }
-body.aptChatPage .aptChatMode{
+body.aptChatRoute.aptChatPage .aptChatMode{
   position: fixed;
   inset: 0;
   margin: 0;
   padding: 0;
   background-attachment: fixed;
 }
-body.aptChatPage .aptChatShell,
-body.aptChatPage .aptChatShellPage{
+body.aptChatRoute.aptChatPage .aptChatShell,
+body.aptChatRoute.aptChatPage .aptChatShellPage{
   height: 100%;
 }
-body.aptChatPage .aptChatShellPage{
+body.aptChatRoute.aptChatPage .aptChatShellPage{
   border-radius: 0;
   border: 0;
   box-shadow: none;
   gap: 12px;
   padding: 12px;
 }
-body.aptChatPage .aptChatPanel{border-radius: 16px}
-body.aptChatPage .aptChatMsgs{max-height:none}
+body.aptChatRoute.aptChatPage .aptChatPanel{border-radius: 16px}
+body.aptChatRoute.aptChatPage .aptChatMsgs{max-height:none}

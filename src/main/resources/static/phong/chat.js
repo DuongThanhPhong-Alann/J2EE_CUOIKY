@@ -1,4 +1,6 @@
 (() => {
+  document.body.classList.remove('aptChatPopoverOpen');
+
   const mode = document.querySelector('.aptChatMode');
   if (!mode) {
     return;
@@ -317,6 +319,8 @@
       hidePopovers();
     }
   });
+  window.addEventListener('pagehide', hidePopovers);
+  window.addEventListener('beforeunload', hidePopovers);
 
   let searchTimer = null;
   let searchAbort = null;
